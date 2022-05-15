@@ -19,7 +19,8 @@ import {
     Button
 } from '@mui/material';
 import { TabPanel, TabContext } from '@mui/lab';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { collection, updateDoc, doc, getDoc } from 'firebase/firestore/lite';
 
 function EditProofDialog({ content, open, handleClose }) {
     const textInput = useRef(null);
@@ -29,7 +30,7 @@ function EditProofDialog({ content, open, handleClose }) {
             <DialogTitle>Modify Goal Achievement</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Fill in how the goal was proofly achieved, this will be validated by your buddy.
+                    Fill in how the goal was achieved, this will be validated by your buddy.
                 </DialogContentText>
                 <TextField
                     inputRef={textInput}
@@ -48,24 +49,14 @@ function EditProofDialog({ content, open, handleClose }) {
     )
 }
 
-function MyGoalsTable({ items, proofChangedHandler }) {
+function MyGoalsTable({ items, doc }) {
+    const [goals, setGoals] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogContent, setDialogContent] = useState('');
     const [clickedIndex, setClickedIndex] = useState(null);
 
-    const handleOpenDialog = (content, idx) => {
-        setDialogContent(content);
-        setClickedIndex(idx);
-        setOpenDialog(true);
-    }
-    const handleCloseDialog = content => {
-        console.log(content);
-        if (content) proofChangedHandler(clickedIndex, content);
-        setDialogContent('');
-        setClickedIndex(null);
-        setOpenDialog(false);
-    }
-    
+    useEffect(() => {(async () => setGoals((await getDoc(doc)).data().goals))();}, []);
+
     return (
         <div>
             <TableContainer component={Paper}>
@@ -77,24 +68,41 @@ function MyGoalsTable({ items, proofChangedHandler }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items.map((item, idx) => (
+                        {goals.map((item, idx) => (
                             <TableRow key={idx} >
                                 <TableCell>{item.goal}</TableCell>
                                 <TableCell
-                                    sx={{cursor: "pointer"}}
-                                    onClick={() => handleOpenDialog(item.proof, idx)}
+                                    sx={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                        setDialogContent(item.proof);
+                                        setClickedIndex(idx);
+                                        setOpenDialog(true);
+                                    }}
                                 >{item.proof}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <EditProofDialog open={openDialog} content={dialogContent} handleClose={handleCloseDialog}/>
+            <EditProofDialog open={openDialog} content={dialogContent} handleClose={proof => {
+                if (proof) {
+                    const updatedGoals = goals.map((item, i) => (i !== clickedIndex) ? item : { ...item, proof });
+                    updateDoc(doc, { goals: updatedGoals });
+                    setGoals(updatedGoals);
+                }
+                setDialogContent('');
+                setClickedIndex(null);
+                setOpenDialog(false);
+            }} />
         </div>
     )
 }
 
-function BuddysGoalsTable({ items }) {
+function BuddyGoalsTable({ items, doc }) {
+    const [goals, setGoals] = useState([]);
+
+    useEffect(() => {(async () => setGoals((await getDoc(doc)).data().goals))();}, []);
+
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -106,14 +114,19 @@ function BuddysGoalsTable({ items }) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {items.map((item, idx) => (
+                    {goals.map((item, idx) => (
                         <TableRow key={idx} >
                             <TableCell>{item.goal}</TableCell>
-                            <TableCell>Proof</TableCell>
+                            <TableCell>{item.proof}</TableCell>
                             <TableCell padding="checkbox">
                                 <Checkbox
+                                    checked={item.validated ?? false}
                                     color="primary"
-                                    onChange={() => console.log('clicked')}
+                                    onChange={() => {
+                                        const updatedGoals = goals.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
+                                        updateDoc(doc, { goals: updatedGoals });
+                                        setGoals(updatedGoals);
+                                    }}
                                 />
                             </TableCell>
                         </TableRow>
@@ -124,26 +137,10 @@ function BuddysGoalsTable({ items }) {
     )
 }
 
-function App() {
+function App({ db, userId, buddyId }) {
     const [tab, setTab] = useState("0");
-    const [myItems, setMyItems] = useState([
-        {
-            goal: "Exercise"
-        },
-        {
-            goal: "Leetcode"
-        }
-    ]);
-    const [buddysItems] = useState([
-        {
-            goal: "Listen to lectures"
-        },
-        {
-            goal: "Work on project"
-        }
-    ]);
 
-    const proofChangedHandler = (idx, proof) => setMyItems(myItems.map((item, i) => (i !== idx) ? item : { ...item, proof }));
+    const users = collection(db, 'users');
 
     return (
         <Box>
@@ -155,12 +152,12 @@ function App() {
             </Box>
             <TabContext value="0">
                 <TabPanel value={tab} >
-                    <MyGoalsTable items={myItems} proofChangedHandler={proofChangedHandler} />
+                    <MyGoalsTable doc={doc(users, userId)} />
                 </TabPanel>
             </TabContext>
             <TabContext value="1">
                 <TabPanel value={tab} >
-                    <BuddysGoalsTable items={buddysItems} />
+                    <BuddyGoalsTable doc={doc(users, buddyId)} />
                 </TabPanel>
             </TabContext>
         </Box>
