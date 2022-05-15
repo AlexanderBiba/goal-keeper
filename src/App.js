@@ -35,8 +35,8 @@ function EditProofDialog({ content, open, handleClose }) {
                 <TextField
                     inputRef={textInput}
                     autoFocus
-                    margin="dense"
-                    label="Achievement Proof"
+                    margin='dense'
+                    label='Achievement Proof'
                     fullWidth
                     defaultValue={content}
                 />
@@ -49,7 +49,7 @@ function EditProofDialog({ content, open, handleClose }) {
     )
 }
 
-function MyGoalsTable({ items, doc }) {
+function MyGoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogContent, setDialogContent] = useState('');
@@ -72,7 +72,7 @@ function MyGoalsTable({ items, doc }) {
                             <TableRow key={idx} >
                                 <TableCell>{item.goal}</TableCell>
                                 <TableCell
-                                    sx={{ cursor: "pointer" }}
+                                    sx={{ cursor: 'pointer' }}
                                     onClick={() => {
                                         setDialogContent(item.proof);
                                         setClickedIndex(idx);
@@ -98,7 +98,7 @@ function MyGoalsTable({ items, doc }) {
     )
 }
 
-function BuddyGoalsTable({ items, doc }) {
+function BuddyGoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
 
     useEffect(() => {(async () => setGoals((await getDoc(doc)).data().goals))();}, []);
@@ -110,7 +110,7 @@ function BuddyGoalsTable({ items, doc }) {
                     <TableRow >
                         <TableCell>Goal</TableCell>
                         <TableCell>Proof</TableCell>
-                        <TableCell padding="checkbox" />
+                        <TableCell padding='checkbox' />
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -118,10 +118,10 @@ function BuddyGoalsTable({ items, doc }) {
                         <TableRow key={idx} >
                             <TableCell>{item.goal}</TableCell>
                             <TableCell>{item.proof}</TableCell>
-                            <TableCell padding="checkbox">
+                            <TableCell padding='checkbox'>
                                 <Checkbox
                                     checked={item.validated ?? false}
-                                    color="primary"
+                                    color='primary'
                                     onChange={() => {
                                         const updatedGoals = goals.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
                                         updateDoc(doc, { goals: updatedGoals });
@@ -137,8 +137,8 @@ function BuddyGoalsTable({ items, doc }) {
     )
 }
 
-function App({ db, userId, buddyId }) {
-    const [tab, setTab] = useState("0");
+export default function App({ db, userId, buddyId }) {
+    const [tab, setTab] = useState('0');
 
     const users = collection(db, 'users');
 
@@ -146,16 +146,16 @@ function App({ db, userId, buddyId }) {
         <Box>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tab} onChange={(_, nextTab) => setTab(nextTab)} >
-                    <Tab value="0" label="My Items" />
-                    <Tab value="1" label="Buddy's Items" />
+                    <Tab value='0' label='My Items' />
+                    <Tab value='1' label='Buddys Items' />
                 </Tabs>
             </Box>
-            <TabContext value="0">
+            <TabContext value='0'>
                 <TabPanel value={tab} >
                     <MyGoalsTable doc={doc(users, userId)} />
                 </TabPanel>
             </TabContext>
-            <TabContext value="1">
+            <TabContext value='1'>
                 <TabPanel value={tab} >
                     <BuddyGoalsTable doc={doc(users, buddyId)} />
                 </TabPanel>
@@ -163,5 +163,3 @@ function App({ db, userId, buddyId }) {
         </Box>
     );
 }
-
-export default App;
