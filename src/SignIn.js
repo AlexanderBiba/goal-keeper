@@ -11,7 +11,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { signInWithGoogle } from './index';
+import firebase from './firebase';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 
 function Copyright(props) {
     return (
@@ -26,9 +27,24 @@ function Copyright(props) {
     );
 }
 
+const auth = getAuth(firebase);
+
+const provider = new GoogleAuthProvider();
+
+const signInWithGoogle = () => {
+    signInWithPopup(auth, provider).then((result) => {
+        const name = result.user.displayName;
+        const email = result.user.email;
+        const profilePic = result.user.photoURL;
+        localStorage.setItem("name", name);
+        localStorage.setItem("email", email);
+        localStorage.setItem("profilePic", profilePic);
+    })
+}
+
 const theme = createTheme();
 
-function SignIn() {
+export default function SignIn() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -37,6 +53,8 @@ function SignIn() {
             password: data.get('password'),
         });
     };
+
+
 
     return (
         <div>
@@ -110,7 +128,6 @@ function SignIn() {
             <Button
                 onClick={signInWithGoogle}
                 type="submit"
-                fullWidth
                 variant="contained"
                 sx={{ mt: 2, mb: 1 }}
             >
@@ -123,5 +140,3 @@ function SignIn() {
         </div>
     );
 }
-
-export default SignIn;

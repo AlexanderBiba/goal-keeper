@@ -20,8 +20,10 @@ import {
 } from '@mui/material';
 import { TabPanel, TabContext } from '@mui/lab';
 import { useState, useRef, useEffect } from 'react';
-import { collection, updateDoc, doc, getDoc } from 'firebase/firestore/lite';
+import { collection, updateDoc, doc, getDoc, getFirestore } from 'firebase/firestore/lite';
 import * as React from 'react';
+import firebase from './firebase';
+
 
 
 function EditProofDialog({ content, open, handleClose }) {
@@ -140,14 +142,15 @@ function BuddyGoalsTable({ doc }) {
 }
 
 
-export default function App({ db, userId, buddyId }) {
+export default function App({ userId, buddyId }) {
     const [tab, setTab] = useState('0');
+
+    const db = getFirestore(firebase);
+
     const users = collection(db, 'users');
 
 
-
     return (
-
         <Box>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tab} onChange={(_, nextTab) => setTab(nextTab)} >
