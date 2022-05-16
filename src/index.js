@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import SignIn from './SignIn';
+import { Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { getFirestore } from 'firebase/firestore/lite';
+import SignIn from './SignIn';
 
 const app = initializeApp({
     apiKey: 'AIzaSyCoVtof9_4DfsWwpVEU71yUFtowZSzLmdE',
@@ -19,9 +22,27 @@ const app = initializeApp({
     measurementId: 'G-DDVKK8ZZRS'
 });
 
+export const auth = getAuth(app);
+
+const provider = new GoogleAuthProvider();
+
+export const signInWithGoogle = () => {
+    signInWithPopup(auth, provider).then((result) => {
+        const name = result.user.displayName;
+        const email = result.user.email;
+        const profilePic = result.user.photoURL;
+        localStorage.setItem("name", name);
+        localStorage.setItem("email", email);
+        localStorage.setItem("profilePic", profilePic);
+    })
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        {/* <SignIn /> */}
-        <App db={getFirestore(app)} userId='Alex' buddyId='Miki' />
-    </React.StrictMode>
+    <BrowserRouter>
+        <Routes>
+            <Route path="/Goalbuddy" element={<SignIn />} />
+            <Route path="app" element={<App db={getFirestore(app)} userId='Alex' buddyId='Miki' />
+            } />
+        </Routes>
+    </BrowserRouter>
 );
