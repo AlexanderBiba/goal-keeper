@@ -9,94 +9,12 @@ import {
     TableRow,
     TableCell,
     Paper,
-    Checkbox,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    TextField,
-    DialogActions,
-    Button
+    Checkbox
 } from '@mui/material';
 import { TabPanel, TabContext } from '@mui/lab';
-import { useState, useRef, useEffect } from 'react';
+import { useState,  useEffect } from 'react';
 import { collection, updateDoc, doc, getDoc } from 'firebase/firestore/lite';
-
-function EditProofDialog({ content, open, handleClose }) {
-    const textInput = useRef(null);
-
-    return (
-        <Dialog open={open} onClose={() => handleClose()} >
-            <DialogTitle>Modify Goal Achievement</DialogTitle>
-            <DialogContent>
-                <DialogContentText>
-                    Fill in how the goal was achieved, this will be validated by your buddy.
-                </DialogContentText>
-                <TextField
-                    inputRef={textInput}
-                    autoFocus
-                    margin='dense'
-                    label='Achievement Proof'
-                    fullWidth
-                    defaultValue={content}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => handleClose()}>Cancel</Button>
-                <Button onClick={() => handleClose(textInput.current.value)}>Save</Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
-
-function MyGoalsTable({ doc }) {
-    const [goals, setGoals] = useState([]);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [dialogContent, setDialogContent] = useState('');
-    const [clickedIndex, setClickedIndex] = useState(null);
-
-    useEffect(() => {(async () => setGoals((await getDoc(doc)).data().goals))();}, []);
-
-    return (
-        <div>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow >
-                            <TableCell>Goal</TableCell>
-                            <TableCell>Proof</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {goals.map((item, idx) => (
-                            <TableRow key={idx} >
-                                <TableCell>{item.goal}</TableCell>
-                                <TableCell
-                                    sx={{ cursor: 'pointer' }}
-                                    onClick={() => {
-                                        setDialogContent(item.proof);
-                                        setClickedIndex(idx);
-                                        setOpenDialog(true);
-                                    }}
-                                >{item.proof}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <EditProofDialog open={openDialog} content={dialogContent} handleClose={proof => {
-                if (proof) {
-                    const updatedGoals = goals.map((item, i) => (i !== clickedIndex) ? item : { ...item, proof });
-                    updateDoc(doc, { goals: updatedGoals });
-                    setGoals(updatedGoals);
-                }
-                setDialogContent('');
-                setClickedIndex(null);
-                setOpenDialog(false);
-            }} />
-        </div>
-    )
-}
+import GoalsTable from './GoalsTable';
 
 function BuddyGoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
@@ -152,7 +70,7 @@ export default function App({ db, userId, buddyId }) {
             </Box>
             <TabContext value='0'>
                 <TabPanel value={tab} >
-                    <MyGoalsTable doc={doc(users, userId)} />
+                    <GoalsTable doc={doc(users, userId)} header={['goals', 'proof']} />
                 </TabPanel>
             </TabContext>
             <TabContext value='1'>
