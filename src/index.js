@@ -12,8 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<SignIn />} />
-            <Route path="app" element={<App userId='Alex' buddyId='Miki' />
-            } />
+            <Route path="app" element={<App />} />
         </Routes>
     </BrowserRouter>
 );

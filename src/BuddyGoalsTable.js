@@ -14,7 +14,7 @@ import { getDoc, updateDoc } from 'firebase/firestore/lite';
 export default function BuddyGoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
 
-    useEffect(() => { (async () => setGoals((await getDoc(doc)).data().goals))(); }, []);
+    useEffect(() => { (async () => setGoals((await getDoc(doc)).data()?.goals ?? []))(); }, []);
 
     return (
         <TableContainer component={Paper}>
