@@ -1,38 +1,28 @@
-import {
-    Typography,
-    Container,
-    FormControlLabel,
-    TextField,
-    Checkbox,
-    Button
-} from '@mui/material';
-import { useState, useRef, useEffect } from 'react';
+import { Button } from '@mui/material';
+import firebase from './firebase';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { useNavigate } from 'react-router-dom';
 
 export default function SignIn() {
-    return (
-        <Container
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-        >
+    const auth = getAuth(firebase);
+    const navigate = useNavigate();
+    const provider = new GoogleAuthProvider();
 
-            <Typography component='h1' >
-                Sign in
-            </Typography>
-            <TextField
-                label='Email'
-            />
-            <TextField
-                label='Password'
-            />
-            <FormControlLabel
-                control={<Checkbox />}
-                label='Remember me'
-            />
-            <Button>Sign In</Button>
-        </Container>
-    )
+    return (
+        <div>
+            <Button
+                onClick={async () => {
+                    localStorage.setItem("user", JSON.stringify((await signInWithPopup(auth, provider)).user))
+                    navigate("/app")
+                }}
+                type="submit"
+                variant="contained"
+                sx={{ mt: 2, mb: 1 }} >
+                Sign In With Google
+            </Button>
+            <h5>{localStorage.getItem("name")}</h5>
+            <h5>{localStorage.getItem("email")}</h5>
+        </div >
+    );
 }
+
