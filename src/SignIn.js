@@ -1,5 +1,4 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 import firebase from './firebase';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useNavigate } from 'react-router-dom';
