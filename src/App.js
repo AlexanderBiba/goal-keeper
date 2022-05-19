@@ -4,16 +4,22 @@ import {
     Tabs
 } from '@mui/material';
 import { TabPanel, TabContext } from '@mui/lab';
-import { useState, createContext } from 'react';
-import { collection, doc } from 'firebase/firestore/lite';
+import { useState } from 'react';
+import { collection, doc, getFirestore } from 'firebase/firestore/lite';
 import MyGoalsTable from './MyGoalsTable';
 import BuddyGoalsTable from './BuddyGoalsTable';
 import DialogProvider from './DialogProvider';
+import firebase from "./firebase"
 
-export default function App({ db, userId, buddyId }) {
+
+
+export default function App({ userId, buddyId }) {
     const [tab, setTab] = useState('0');
 
+    const db = getFirestore(firebase);
+
     const users = collection(db, 'users');
+
 
     return (
         <DialogProvider>
