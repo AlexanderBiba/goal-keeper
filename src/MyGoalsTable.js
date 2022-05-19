@@ -6,6 +6,7 @@ import {
     TableRow,
     TableCell,
     Paper,
+    Dialog,
     DialogTitle,
     DialogContent,
     DialogContentText,
@@ -13,13 +14,13 @@ import {
     DialogActions,
     Button
 } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { getDoc, updateDoc } from 'firebase/firestore/lite';
-import { useDialog } from './DialogProvider';
+import { DialogContext } from './DialogProvider';
 
 export default function GoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
-    const [openDialog, closeDialog] = useDialog();
+    const { openDialog, closeDialog } = useContext(DialogContext);
     const textInput = useRef(null);
 
     useEffect(() => { (async () => setGoals((await getDoc(doc)).data().goals))(); }, []);
@@ -36,37 +37,33 @@ export default function GoalsTable({ doc }) {
                     {goals.map((item, idx) => (
                         <TableRow key={idx} >
                             <TableCell>{item.goal}</TableCell>
-                            <TableCell sx={{ cursor: 'pointer' }} onClick={() => {
-                                openDialog({
-                                    children: (
-                                        <>
-                                            <DialogTitle>Modify Goal Achievement</DialogTitle>
-                                            <DialogContent>
-                                                <DialogContentText>
-                                                    Fill in how the goal was achieved, this will be validated by your buddy.
-                                                </DialogContentText>
-                                                <TextField
-                                                    inputRef={textInput}
-                                                    autoFocus
-                                                    margin='dense'
-                                                    label='Achievement Proof'
-                                                    fullWidth
-                                                    defaultValue={item.proof}
-                                                />
-                                            </DialogContent>
-                                            <DialogActions>
-                                                <Button onClick={() => closeDialog()}>Cancel</Button>
-                                                <Button onClick={() => {
-                                                    const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof: textInput.current.value });
-                                                    updateDoc(doc, { goals: updatedGoals });
-                                                    setGoals(updatedGoals);
-                                                    closeDialog();
-                                                }}>Save</Button>
-                                            </DialogActions>
-                                        </>
-                                    )
-                                });
-                            }}>{item.proof}</TableCell>
+                            <TableCell sx={{ cursor: 'pointer' }} onClick={() => openDialog((
+                                <Dialog open={true} onClose={closeDialog}>
+                                    <DialogTitle>Modify Goal Achievement</DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText>
+                                            Fill in how the goal was achieved, this will be validated by your buddy.
+                                        </DialogContentText>
+                                        <TextField
+                                            inputRef={textInput}
+                                            autoFocus
+                                            margin='dense'
+                                            label='Achievement Proof'
+                                            fullWidth
+                                            defaultValue={item.proof}
+                                        />
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={closeDialog}>Cancel</Button>
+                                        <Button onClick={() => {
+                                            const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof: textInput.current.value });
+                                            updateDoc(doc, { goals: updatedGoals });
+                                            setGoals(updatedGoals);
+                                            closeDialog();
+                                        }}>Save</Button>
+                                    </DialogActions>
+                                </Dialog>
+                            ))}>{item.proof}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

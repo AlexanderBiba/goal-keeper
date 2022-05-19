@@ -1,40 +1,13 @@
-import { useRef, useContext, createContext, useState } from "react";
-import { Dialog } from "@mui/material";
+import { useRef, useState, createContext } from "react";
 
-const DialogContext = createContext([() => { }, () => { }]);
-export const useDialog = () => useContext(DialogContext);
+export const DialogContext = createContext({});
 
 export default function DialogProvider({ children }) {
-    const [dialogs, setDialogs] = useState([]);
-    const closeDialog = () => {
-        setDialogs((dialogs) => {
-            const latestDialog = dialogs.pop();
-            if (!latestDialog) return dialogs;
-            if (latestDialog.onClose) latestDialog.onClose();
-            return [...dialogs].concat({ ...latestDialog, open: false });
-        });
-    };
-    const contextValue = useRef([
-        option => {
-            const dialog = { ...option, open: true };
-            setDialogs((dialogs) => [...dialogs, dialog]);
-        },
-        closeDialog
-    ]);
-
+    const [dialog, setDialog] = useState(null);
     return (
-        <DialogContext.Provider value={contextValue.current}>
+        <DialogContext.Provider value={useRef({ openDialog: dialog => setDialog(dialog), closeDialog: () => setDialog(null) }).current}>
             {children}
-            {dialogs.map((dialog, i) => {
-                const { onClose, ...dialogParams } = dialog;
-                return (
-                    <Dialog
-                        key={i}
-                        onClose={closeDialog}
-                        {...dialogParams}
-                    />
-                );
-            })}
+            {dialog}
         </DialogContext.Provider>
     );
 }
