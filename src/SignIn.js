@@ -30,8 +30,8 @@ export default function SignIn() {
                 Sign In With Google
             </Button>
 
-            <h5>{sessionStorage.getItem("name")}</h5>
-            <h5>{sessionStorage.getItem("email")}</h5>
+            <h5>{localStorage.getItem("name")}</h5>
+            <h5>{localStorage.getItem("email")}</h5>
         </div >
     );
 }
