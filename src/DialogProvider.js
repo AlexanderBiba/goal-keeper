@@ -4,17 +4,8 @@ import { Dialog } from "@mui/material";
 const DialogContext = createContext([() => { }, () => { }]);
 export const useDialog = () => useContext(DialogContext);
 
-function DialogContainer(props) {
-    const { children, open, onClose } = props;
-    return (<Dialog open={open} onClose={onClose}>{children}</Dialog>);
-}
-
 export default function DialogProvider({ children }) {
     const [dialogs, setDialogs] = useState([]);
-    const createDialog = (option) => {
-        const dialog = { ...option, open: true };
-        setDialogs((dialogs) => [...dialogs, dialog]);
-    };
     const closeDialog = () => {
         setDialogs((dialogs) => {
             const latestDialog = dialogs.pop();
@@ -23,7 +14,13 @@ export default function DialogProvider({ children }) {
             return [...dialogs].concat({ ...latestDialog, open: false });
         });
     };
-    const contextValue = useRef([createDialog, closeDialog]);
+    const contextValue = useRef([
+        option => {
+            const dialog = { ...option, open: true };
+            setDialogs((dialogs) => [...dialogs, dialog]);
+        },
+        closeDialog
+    ]);
 
     return (
         <DialogContext.Provider value={contextValue.current}>
@@ -31,7 +28,7 @@ export default function DialogProvider({ children }) {
             {dialogs.map((dialog, i) => {
                 const { onClose, ...dialogParams } = dialog;
                 return (
-                    <DialogContainer
+                    <Dialog
                         key={i}
                         onClose={closeDialog}
                         {...dialogParams}
