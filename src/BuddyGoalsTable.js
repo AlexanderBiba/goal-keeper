@@ -9,7 +9,7 @@ import {
     Checkbox
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { getDoc, updateDoc } from 'firebase/firestore/lite';
+import { getDoc, setDoc } from 'firebase/firestore/lite';
 
 export default function BuddyGoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
@@ -37,7 +37,7 @@ export default function BuddyGoalsTable({ doc }) {
                                     color='primary'
                                     onChange={() => {
                                         const updatedGoals = goals.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
-                                        updateDoc(doc, { goals: updatedGoals });
+                                        setDoc(doc, { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                     }}
                                 />

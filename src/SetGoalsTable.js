@@ -15,7 +15,7 @@ import {
     Button
 } from '@mui/material';
 import { useState, useEffect, useRef, useContext } from 'react';
-import { updateDoc, getDoc } from 'firebase/firestore/lite';
+import { setDoc, getDoc } from 'firebase/firestore/lite';
 import { Delete } from '@mui/icons-material';
 import { DialogContext } from './DialogProvider';
 
@@ -31,13 +31,23 @@ export default function SetGoalsTable({ doc }) {
             <Table>
                 <TableHead>
                     <TableRow >
+                        <TableCell><Delete/></TableCell>
                         <TableCell>Goal</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {goals.map((item, idx) => (
                         <TableRow key={idx} >
-                            <TableCell><Delete/></TableCell>
+                            <TableCell>
+                                <Delete
+                                    sx={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        const updatedGoals = [...goals];
+                                        updatedGoals.splice(idx, 1);
+                                        setDoc(doc, { goals: updatedGoals });
+                                        setGoals(updatedGoals);
+                                    }} />
+                            </TableCell>
                             <TableCell>{item.goal}</TableCell>
                         </TableRow>
                     ))}
@@ -61,8 +71,8 @@ export default function SetGoalsTable({ doc }) {
                                     <DialogActions>
                                         <Button onClick={closeDialog}>Cancel</Button>
                                         <Button onClick={() => {
-                                            const updatedGoals = goals.concat({ goal: textInput.current.value });
-                                            updateDoc(doc, { goals: updatedGoals });
+                                            const updatedGoals = [...goals, { goal: textInput.current.value }];
+                                            setDoc(doc, { goals: updatedGoals });
                                             setGoals(updatedGoals);
                                             closeDialog();
                                         }}>Save</Button>
