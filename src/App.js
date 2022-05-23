@@ -6,11 +6,11 @@ import {
 import { TabPanel, TabContext } from '@mui/lab';
 import { useState } from 'react';
 import { collection, doc, getFirestore } from 'firebase/firestore/lite';
-import MyGoalsTable from './MyGoalsTable';
-import BuddyGoalsTable from './BuddyGoalsTable';
 import DialogProvider from './DialogProvider';
 import firebase from "./firebase"
-import SetGoalsTable from './SetGoalsTable';
+import SetGoals from './tables/SetGoals';
+import MyGoals from './tables/MyGoals';
+import BuddyGoals from './tables/BuddyGoals';
 
 export default function App() {
     const [tab, setTab] = useState('0');
@@ -30,17 +30,17 @@ export default function App() {
                 </Box>
                 <TabContext value='0'>
                     <TabPanel value={tab} >
-                        <MyGoalsTable doc={doc(users, userId)} />
+                        <MyGoals doc={doc(users, userId)} />
                     </TabPanel>
                 </TabContext>
                 <TabContext value='1'>
                     <TabPanel value={tab} >
-                        <BuddyGoalsTable doc={doc(users, 'Miki')} />
+                        <BuddyGoals doc={doc(users, 'Miki')} />
                     </TabPanel>
                 </TabContext>
                 <TabContext value='2'>
                     <TabPanel value={tab} >
-                        <SetGoalsTable doc={doc(users, userId)} />
+                        <SetGoals doc={doc(users, userId)} />
                     </TabPanel>
                 </TabContext>
             </Box>

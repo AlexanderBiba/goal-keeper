@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { useState, useRef, useContext, useEffect } from 'react';
 import { setDoc, getDoc } from 'firebase/firestore/lite';
-import { DialogContext } from './DialogProvider';
+import { DialogContext } from '../DialogProvider';
 
 export default function GoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
@@ -56,6 +56,8 @@ export default function GoalsTable({ doc }) {
                                         <DialogActions>
                                             <Button onClick={closeDialog}>Cancel</Button>
                                             <Button onClick={() => {
+                                                const content = textInput.current.value;
+                                                if (!content) return;
                                                 const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof: textInput.current.value });
                                                 setDoc(doc, { goals: updatedGoals });
                                                 setGoals(updatedGoals);
