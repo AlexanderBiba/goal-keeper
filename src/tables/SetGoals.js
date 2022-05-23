@@ -22,7 +22,6 @@ import { DialogContext } from '../DialogProvider';
 export default function SetGoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
-    const textInput = useRef(null);
 
     useEffect(() => { (async () => setGoals((await getDoc(doc)).data()?.goals ?? []))(); }, []);
 
@@ -31,7 +30,7 @@ export default function SetGoalsTable({ doc }) {
             <Table>
                 <TableHead>
                     <TableRow >
-                        <TableCell><Delete/></TableCell>
+                        <TableCell><Delete /></TableCell>
                         <TableCell>Goal</TableCell>
                     </TableRow>
                 </TableHead>
@@ -57,31 +56,31 @@ export default function SetGoalsTable({ doc }) {
                             sx={{ cursor: 'pointer' }}
                             onClick={() => openDialog((
                                 <Dialog open={true} onClose={closeDialog}>
-                                    <DialogTitle>Add New Goal</DialogTitle>
-                                    <DialogContent>
-                                        <DialogContentText>Set a goal</DialogContentText>
-                                        <TextField
-                                            inputRef={textInput}
-                                            autoFocus
-                                            margin='dense'
-                                            label='Goal'
-                                            fullWidth
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={closeDialog}>Cancel</Button>
-                                        <Button
-                                            type='submit'
-                                            onClick={() => {
-                                                const content = textInput.current.value;
-                                                if (!content) return;
-                                                const updatedGoals = [...goals, { goal: textInput.current.value }];
-                                                setDoc(doc, { goals: updatedGoals });
-                                                setGoals(updatedGoals);
-                                                closeDialog();
-                                            }
-                                        }>Save</Button>
-                                    </DialogActions>
+                                    <form onSubmit={e => {
+                                        e.preventDefault();
+                                        const goal = e.target.goal.value;
+                                        if (!goal) return;
+                                        const updatedGoals = [...goals, { goal }];
+                                        setDoc(doc, { goals: updatedGoals });
+                                        setGoals(updatedGoals);
+                                        closeDialog();
+                                    }}>
+                                        <DialogTitle>Add New Goal</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText>Set a goal</DialogContentText>
+                                            <TextField
+                                                name='goal'
+                                                autoFocus
+                                                margin='dense'
+                                                label='Goal'
+                                                fullWidth
+                                            />
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={closeDialog}>Cancel</Button>
+                                            <Button variant='contained' type='submit'>Save</Button>
+                                        </DialogActions>
+                                    </form>
                                 </Dialog>
                             ))}
                         >Add new goal</TableCell>

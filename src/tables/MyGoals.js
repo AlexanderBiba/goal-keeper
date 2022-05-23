@@ -21,7 +21,6 @@ import { DialogContext } from '../DialogProvider';
 export default function GoalsTable({ doc }) {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
-    const textInput = useRef(null);
 
     useEffect(() => { (async () => setGoals((await getDoc(doc)).data()?.goals ?? []))(); }, []);
 
@@ -41,29 +40,32 @@ export default function GoalsTable({ doc }) {
                                 sx={{ cursor: 'pointer' }}
                                 onClick={() => openDialog((
                                     <Dialog open={true} onClose={closeDialog}>
-                                        <DialogTitle>Modify Goal Achievement</DialogTitle>
-                                        <DialogContent>
-                                            <DialogContentText>Fill in how the goal was achieved, this will be validated by your buddy.</DialogContentText>
-                                            <TextField
-                                                inputRef={textInput}
-                                                autoFocus
-                                                margin='dense'
-                                                label='Achievement Proof'
-                                                fullWidth
-                                                defaultValue={item.proof}
-                                            />
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={closeDialog}>Cancel</Button>
-                                            <Button onClick={() => {
-                                                const content = textInput.current.value;
-                                                if (!content) return;
-                                                const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof: textInput.current.value });
-                                                setDoc(doc, { goals: updatedGoals });
-                                                setGoals(updatedGoals);
-                                                closeDialog();
-                                            }}>Save</Button>
-                                        </DialogActions>
+                                        <form onSubmit={e => {
+                                            e.preventDefault();
+                                            const proof = e.target.proof.value;
+                                            if (!proof) return;
+                                            const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof });
+                                            setDoc(doc, { goals: updatedGoals });
+                                            setGoals(updatedGoals);
+                                            closeDialog();
+                                        }}>
+                                            <DialogTitle>Modify Goal Achievement</DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText>Fill in how the goal was achieved, this will be validated by your buddy.</DialogContentText>
+                                                <TextField
+                                                    name='proof'
+                                                    autoFocus
+                                                    margin='dense'
+                                                    label='Achievement Proof'
+                                                    fullWidth
+                                                    defaultValue={item.proof}
+                                                />
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={closeDialog}>Cancel</Button>
+                                                <Button variant='contained' type='submit'>Save</Button>
+                                            </DialogActions>
+                                        </form>
                                     </Dialog>
                                 ))}
                             >{item.proof}</TableCell>

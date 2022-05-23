@@ -7,7 +7,7 @@ import { TabPanel, TabContext } from '@mui/lab';
 import { useState } from 'react';
 import { collection, doc, getFirestore } from 'firebase/firestore/lite';
 import DialogProvider from './DialogProvider';
-import firebase from "./firebase"
+import firebase from './firebase'
 import SetGoals from './tables/SetGoals';
 import MyGoals from './tables/MyGoals';
 import BuddyGoals from './tables/BuddyGoals';
