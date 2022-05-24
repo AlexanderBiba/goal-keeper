@@ -12,6 +12,7 @@ import SetGoals from './tables/SetGoals';
 import MyGoals from './tables/MyGoals';
 import BuddyGoals from './tables/BuddyGoals';
 import Settings from './Settings';
+import History from './History';
 
 export default function App() {
     const [tab, setTab] = useState('0');
@@ -21,11 +22,16 @@ export default function App() {
         <DialogProvider>
             <Box>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={tab} onChange={(_, nextTab) => setTab(nextTab)} >
+                    <Tabs
+                        value={tab}
+                        onChange={(_, nextTab) => setTab(nextTab)}
+                        variant='scrollable'
+                    >
                         <Tab value='0' label='My Goals' />
                         <Tab value='1' label='Buddys Goals' />
                         <Tab value='2' label='Set Goals For Tomorrow' />
-                        <Tab value='3' label='Settings' />
+                        <Tab value='3' label='History' />
+                        <Tab value='4' label='Settings' />
                     </Tabs>
                 </Box>
                 <TabContext value='0'>
@@ -44,6 +50,11 @@ export default function App() {
                     </TabPanel>
                 </TabContext>
                 <TabContext value='3'>
+                    <TabPanel value={tab} >
+                        <History db={db} />
+                    </TabPanel>
+                </TabContext>
+                <TabContext value='4'>
                     <TabPanel value={tab} >
                         <Settings db={db} />
                     </TabPanel>

@@ -31,7 +31,9 @@ export default function SetGoalsTable({ db }) {
     const todayStr = today.toISOString().split('T')[0];
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-    useEffect(() => { (async () => setGoals((await getDoc(doc(db, 'users', userId, 'goals', tomorrowStr))).data()?.goals ?? []))(); }, []);
+    const tomorrowsDoc = doc(db, 'users', userId, 'goals', tomorrowStr);
+
+    useEffect(() => { (async () => setGoals((await getDoc(tomorrowsDoc)).data()?.goals ?? []))(); }, []);
 
     return (
         <TableContainer component={Paper}>
@@ -51,7 +53,7 @@ export default function SetGoalsTable({ db }) {
                                     onClick={() => {
                                         const updatedGoals = [...goals];
                                         updatedGoals.splice(idx, 1);
-                                        setDoc(doc, { goals: updatedGoals });
+                                        setDoc(tomorrowsDoc, { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                     }} />
                             </TableCell>
@@ -69,7 +71,7 @@ export default function SetGoalsTable({ db }) {
                                         const goal = e.target.goal.value;
                                         if (!goal) return;
                                         const updatedGoals = [...goals, { goal }];
-                                        setDoc(doc, { goals: updatedGoals });
+                                        setDoc(tomorrowsDoc, { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                         closeDialog();
                                     }}>
