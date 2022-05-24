@@ -9,7 +9,7 @@ import '@fontsource/roboto/700.css';
 import SignIn from './SignIn'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
+    <BrowserRouter basename='GoalBuddy'>
         <Routes>
             <Route path='/' element={<SignIn />} />
             <Route path='app' element={<App />} />

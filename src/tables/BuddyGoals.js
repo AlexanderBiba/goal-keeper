@@ -9,12 +9,20 @@ import {
     Checkbox
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { getDoc, setDoc } from 'firebase/firestore/lite';
+import { getDoc, setDoc, doc } from 'firebase/firestore/lite';
 
-export default function BuddyGoalsTable({ doc }) {
+export default function BuddyGoalsTable({ db }) {
     const [goals, setGoals] = useState([]);
+    const userId = JSON.parse(localStorage.getItem('user')).email;
 
-    useEffect(() => { (async () => setGoals((await getDoc(doc)).data()?.goals ?? []))(); }, []);
+    const today = new Date();
+    today.setUTCHours(0,0,0,0);
+    const todayStr = today.toISOString().split('T')[0];
+
+    useEffect(() => { (async () => {
+        const { buddy } = (await getDoc(doc(db, 'users', userId))).data()?.settings ?? {};
+        setGoals((await getDoc(doc(db, 'users', buddy, 'goals', todayStr))).data()?.goals ?? []);
+    })(); }, []);
 
     return (
         <TableContainer component={Paper}>

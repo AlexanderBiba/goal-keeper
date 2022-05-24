@@ -14,16 +14,24 @@ import {
     DialogActions,
     Button
 } from '@mui/material';
-import { useState, useEffect, useRef, useContext } from 'react';
-import { setDoc, getDoc } from 'firebase/firestore/lite';
+import { useState, useEffect, useContext } from 'react';
+import { setDoc, getDoc, doc } from 'firebase/firestore/lite';
 import { Delete } from '@mui/icons-material';
 import { DialogContext } from '../DialogProvider';
 
-export default function SetGoalsTable({ doc }) {
+export default function SetGoalsTable({ db }) {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
+    const userId = JSON.parse(localStorage.getItem('user')).email;
 
-    useEffect(() => { (async () => setGoals((await getDoc(doc)).data()?.goals ?? []))(); }, []);
+    const today = new Date();
+    today.setUTCHours(0,0,0,0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const todayStr = today.toISOString().split('T')[0];
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+    useEffect(() => { (async () => setGoals((await getDoc(doc(db, 'users', userId, 'goals', tomorrowStr))).data()?.goals ?? []))(); }, []);
 
     return (
         <TableContainer component={Paper}>
