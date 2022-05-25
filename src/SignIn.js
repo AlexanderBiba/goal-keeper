@@ -10,7 +10,7 @@ export default function SignIn() {
             <Button
                 onClick={async () => {
                     localStorage.setItem('user', JSON.stringify((await signInWithPopup(getAuth(firebase), new GoogleAuthProvider())).user));
-                    navigate('/app');
+                    navigate('/');
                 }}
                 type='submit'
                 variant='contained'
