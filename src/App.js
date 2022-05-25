@@ -91,7 +91,7 @@ export default function App() {
                 <Route
                     path="/"
                     element={(
-                        JSON.parse(localStorage.getItem('user')).email ?
+                        JSON.parse(localStorage.getItem('user'))?.email ?
                             <Navigate to="/my-goals" /> :
                             <Navigate to="/sign-in" />
                     )}
