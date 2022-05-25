@@ -3,13 +3,15 @@ import {
     TextField,
     Stack
 } from '@mui/material';
-import { setDoc, getDoc, doc } from 'firebase/firestore/lite';
+import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
 import { useState, useEffect } from 'react';
+import firebase from './firebase'
 
-export default function Settings({ db }) {
+export default function Settings() {
     const [settings, setSettings] = useState({});
     const userId = JSON.parse(localStorage.getItem('user')).email;
 
+    const db = getFirestore(firebase);
     useEffect(() => { (async () => setSettings((await getDoc(doc(db, 'users', userId))).data()?.settings ?? {}))(); }, []);
 
     return (

@@ -15,11 +15,12 @@ import {
     Button
 } from '@mui/material';
 import { useState, useEffect, useContext } from 'react';
-import { setDoc, getDoc, doc } from 'firebase/firestore/lite';
+import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
 import { Delete } from '@mui/icons-material';
 import { DialogContext } from '../DialogProvider';
+import firebase from '../firebase'
 
-export default function SetGoalsTable({ db }) {
+export default function SetGoalsTable() {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const userId = JSON.parse(localStorage.getItem('user')).email;
@@ -31,6 +32,7 @@ export default function SetGoalsTable({ db }) {
     const todayStr = today.toISOString().split('T')[0];
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
+    const db = getFirestore(firebase);
     const tomorrowsDoc = doc(db, 'users', userId, 'goals', tomorrowStr);
 
     useEffect(() => { (async () => setGoals((await getDoc(tomorrowsDoc)).data()?.goals ?? []))(); }, []);

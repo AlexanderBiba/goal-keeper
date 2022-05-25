@@ -4,16 +4,13 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
 
 export default function SignIn() {
-    const auth = getAuth(firebase);
     const navigate = useNavigate();
-    const provider = new GoogleAuthProvider();
-
     return (
         <div>
             <Button
                 onClick={async () => {
-                    localStorage.setItem('user', JSON.stringify((await signInWithPopup(auth, provider)).user))
-                    navigate('/app')
+                    localStorage.setItem('user', JSON.stringify((await signInWithPopup(getAuth(firebase), new GoogleAuthProvider())).user));
+                    navigate('/app');
                 }}
                 type='submit'
                 variant='contained'

@@ -9,9 +9,10 @@ import {
     Checkbox
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { getDoc, setDoc, doc } from 'firebase/firestore/lite';
+import { getDoc, setDoc, doc, getFirestore } from 'firebase/firestore/lite';
+import firebase from '../firebase'
 
-export default function BuddyGoalsTable({ db }) {
+export default function BuddyGoalsTable() {
     const [goals, setGoals] = useState([]);
     const userId = JSON.parse(localStorage.getItem('user')).email;
 
@@ -19,6 +20,7 @@ export default function BuddyGoalsTable({ db }) {
     today.setUTCHours(0,0,0,0);
     const todayStr = today.toISOString().split('T')[0];
 
+    const db = getFirestore(firebase);
     useEffect(() => { (async () => {
         const { buddy } = (await getDoc(doc(db, 'users', userId))).data()?.settings ?? {};
         setGoals((await getDoc(doc(db, 'users', buddy, 'goals', todayStr))).data()?.goals ?? []);

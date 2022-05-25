@@ -10,13 +10,15 @@ import {
     Typography,
     Checkbox
 } from '@mui/material';
-import { collection, query, getDocs } from 'firebase/firestore/lite';
+import { collection, query, getDocs, getFirestore } from 'firebase/firestore/lite';
 import { useState, useEffect } from 'react';
+import firebase from './firebase'
 
-export default function History({ db }) {
+export default function History() {
     const [dateGoals, setDateGoals] = useState([]);
     const userId = JSON.parse(localStorage.getItem('user')).email;
 
+    const db = getFirestore(firebase);
     useEffect(() => { (async () => {
         const allGoals = [];
         (await getDocs(query(collection(db, 'users', userId, 'goals'))) ?? []).forEach(doc => allGoals.push({
