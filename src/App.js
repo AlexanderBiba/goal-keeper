@@ -53,10 +53,10 @@ export default function App() {
             <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
                 <List>
                     {[
-                        ['My Goals', <LibraryBooksIcon />, '/goal-buddy/my-goals'],
-                        ['Buddy Goals', <LibraryAddCheckIcon />, '/goal-buddy/buddy-goals'],
-                        ['Set Goals', <LibraryAddIcon />, '/goal-buddy/set-goals'],
-                        ['History', <HistoryIcon />, '/goal-buddy/history'],
+                        ['My Goals', <LibraryBooksIcon />, 'my-goals'],
+                        ['Buddy Goals', <LibraryAddCheckIcon />, 'buddy-goals'],
+                        ['Set Goals', <LibraryAddIcon />, 'set-goals'],
+                        ['History', <HistoryIcon />, 'history'],
                     ].map(([text, icon, route], index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemButton onClick={() => {
@@ -72,8 +72,8 @@ export default function App() {
                 <Divider />
                 <List>
                     {[
-                        ['Settings', <SettingsIcon />, '/goal-buddy/settings'],
-                        ['Sign Out', <LogoutIcon />, '/goal-buddy/sign-in']
+                        ['Settings', <SettingsIcon />, 'settings'],
+                        ['Sign Out', <LogoutIcon />, 'sign-in']
                     ].map(([text, icon, route], index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemButton onClick={() => {
@@ -89,19 +89,19 @@ export default function App() {
             </Drawer>
             <Routes>
                 <Route
-                    path="/goal-buddy"
+                    path='/'
                     element={(
                         JSON.parse(localStorage.getItem('user'))?.email ?
-                            <Navigate to="/goal-buddy/my-goals" /> :
-                            <Navigate to="/goal-buddy/sign-in" />
+                            <Navigate to='my-goals' /> :
+                            <Navigate to='sign-in' />
                     )}
                 />
-                <Route path='/goal-buddy/sign-in' element={<SignIn />} />
-                <Route path='/goal-buddy/my-goals' element={<MyGoals />} />
-                <Route path='/goal-buddy/buddy-goals' element={<BuddyGoals />} />
-                <Route path='/goal-buddy/set-goals' element={<SetGoals />} />
-                <Route path='/goal-buddy/history' element={<History />} />
-                <Route path='/goal-buddy/settings' element={<Settings />} />
+                <Route path='sign-in' element={<SignIn />} />
+                <Route path='my-goals' element={<MyGoals />} />
+                <Route path='buddy-goals' element={<BuddyGoals />} />
+                <Route path='set-goals' element={<SetGoals />} />
+                <Route path='history' element={<History />} />
+                <Route path='settings' element={<Settings />} />
             </Routes>
         </DialogProvider>
     )
