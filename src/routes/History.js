@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { collection, query, getDocs, getFirestore } from 'firebase/firestore/lite';
 import { useState, useEffect } from 'react';
-import firebase from './firebase'
+import firebase from '../firebase'
 
 export default function History() {
     const [dateGoals, setDateGoals] = useState([]);

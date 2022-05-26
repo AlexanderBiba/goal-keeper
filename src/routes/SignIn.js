@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import firebase from './firebase';
+import firebase from '../firebase';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
 
@@ -22,4 +22,3 @@ export default function SignIn() {
         </div >
     );
 }
-

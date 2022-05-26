@@ -7,12 +7,12 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import DialogProvider from './DialogProvider';
-import SignIn from './SignIn'
-import SetGoals from './tables/SetGoals';
-import MyGoals from './tables/MyGoals';
-import BuddyGoals from './tables/BuddyGoals';
-import Settings from './Settings';
-import History from './History';
+import SignIn from './routes/SignIn'
+import SetGoals from './routes/SetGoals';
+import MyGoals from './routes/MyGoals';
+import BuddyGoals from './routes/BuddyGoals';
+import Settings from './routes/Settings';
+import History from './routes/History';
 
 import {
     AppBar,
@@ -53,10 +53,10 @@ export default function App() {
             <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
                 <List>
                     {[
-                        ['My Goals', <LibraryBooksIcon />, 'my-goals'],
-                        ['Buddy Goals', <LibraryAddCheckIcon />, 'buddy-goals'],
-                        ['Set Goals', <LibraryAddIcon />, 'set-goals'],
-                        ['History', <HistoryIcon />, 'history'],
+                        ['My Goals', <LibraryBooksIcon />, '/goal-buddy/my-goals'],
+                        ['Buddy Goals', <LibraryAddCheckIcon />, '/goal-buddy/buddy-goals'],
+                        ['Set Goals', <LibraryAddIcon />, '/goal-buddy/set-goals'],
+                        ['History', <HistoryIcon />, '/goal-buddy/history'],
                     ].map(([text, icon, route], index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemButton onClick={() => {
@@ -72,8 +72,8 @@ export default function App() {
                 <Divider />
                 <List>
                     {[
-                        ['Settings', <SettingsIcon />, 'settings'],
-                        ['Sign Out', <LogoutIcon />, 'sign-in']
+                        ['Settings', <SettingsIcon />, '/goal-buddy/settings'],
+                        ['Sign Out', <LogoutIcon />, '/goal-buddy/sign-in']
                     ].map(([text, icon, route], index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemButton onClick={() => {
@@ -89,19 +89,19 @@ export default function App() {
             </Drawer>
             <Routes>
                 <Route
-                    path="/"
+                    path="/goal-buddy"
                     element={(
                         JSON.parse(localStorage.getItem('user'))?.email ?
-                            <Navigate to="/my-goals" /> :
-                            <Navigate to="/sign-in" />
+                            <Navigate to="/goal-buddy/my-goals" /> :
+                            <Navigate to="/goal-buddy/sign-in" />
                     )}
                 />
-                <Route path='sign-in' element={<SignIn />} />
-                <Route path='my-goals' element={<MyGoals />} />
-                <Route path='buddy-goals' element={<BuddyGoals />} />
-                <Route path='set-goals' element={<SetGoals />} />
-                <Route path='history' element={<History />} />
-                <Route path='settings' element={<Settings />} />
+                <Route path='/goal-buddy/sign-in' element={<SignIn />} />
+                <Route path='/goal-buddy/my-goals' element={<MyGoals />} />
+                <Route path='/goal-buddy/buddy-goals' element={<BuddyGoals />} />
+                <Route path='/goal-buddy/set-goals' element={<SetGoals />} />
+                <Route path='/goal-buddy/history' element={<History />} />
+                <Route path='/goal-buddy/settings' element={<Settings />} />
             </Routes>
         </DialogProvider>
     )
