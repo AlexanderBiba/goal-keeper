@@ -18,12 +18,11 @@ import { useState, useEffect, useContext } from 'react';
 import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
 import { Delete } from '@mui/icons-material';
 import { DialogContext } from '../DialogProvider';
-import firebase from '../firebase'
+import firebase, { user } from '../firebase'
 
 export default function SetGoalsTable() {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
-    const userId = JSON.parse(localStorage.getItem('user')).email;
 
     const today = new Date();
     today.setUTCHours(0,0,0,0);
@@ -33,9 +32,8 @@ export default function SetGoalsTable() {
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
     const db = getFirestore(firebase);
-    const tomorrowsDoc = doc(db, 'users', userId, 'goals', tomorrowStr);
 
-    useEffect(() => { (async () => setGoals((await getDoc(tomorrowsDoc)).data()?.goals ?? []))(); }, []);
+    useEffect(() => { (async () => setGoals((await getDoc(doc(db, 'users', (await user).email, 'goals', tomorrowStr))).data()?.goals ?? []))(); }, []);
 
     return (
         <TableContainer component={Paper}>
@@ -52,10 +50,10 @@ export default function SetGoalsTable() {
                             <TableCell>
                                 <Delete
                                     sx={{ cursor: 'pointer' }}
-                                    onClick={() => {
+                                    onClick={async() => {
                                         const updatedGoals = [...goals];
                                         updatedGoals.splice(idx, 1);
-                                        setDoc(tomorrowsDoc, { goals: updatedGoals });
+                                        setDoc(doc(db, 'users', (await user).email, 'goals', tomorrowStr), { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                     }} />
                             </TableCell>
@@ -68,12 +66,12 @@ export default function SetGoalsTable() {
                             sx={{ cursor: 'pointer' }}
                             onClick={() => openDialog((
                                 <Dialog open={true} onClose={closeDialog}>
-                                    <form onSubmit={e => {
+                                    <form onSubmit={async e => {
                                         e.preventDefault();
                                         const goal = e.target.goal.value;
                                         if (!goal) return;
                                         const updatedGoals = [...goals, { goal }];
-                                        setDoc(tomorrowsDoc, { goals: updatedGoals });
+                                        setDoc(doc(db, 'users', (await user).email, 'goals', tomorrowStr), { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                         closeDialog();
                                     }}>

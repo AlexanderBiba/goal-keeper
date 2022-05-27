@@ -17,19 +17,18 @@ import {
 import { useState, useContext, useEffect } from 'react';
 import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
 import { DialogContext } from '../DialogProvider';
-import firebase from '../firebase'
+import firebase, { user } from '../firebase'
 
 export default function GoalsTable() {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
-    const userId = JSON.parse(localStorage.getItem('user')).email;
 
     const today = new Date();
     today.setUTCHours(0,0,0,0);
     const todayStr = today.toISOString().split('T')[0];
 
     const db = getFirestore(firebase);
-    useEffect(() => { (async () => setGoals((await getDoc(doc(db, 'users', userId, 'goals', todayStr))).data()?.goals ?? []))(); }, []);
+    useEffect(() => { (async () => setGoals((await getDoc(doc(db, 'users', (await user).email, 'goals', todayStr))).data()?.goals ?? []))(); }, []);
 
     return (
         <TableContainer component={Paper}>

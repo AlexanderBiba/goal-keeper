@@ -10,11 +10,10 @@ import {
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { getDoc, setDoc, doc, getFirestore } from 'firebase/firestore/lite';
-import firebase from '../firebase'
+import firebase, { user } from '../firebase';
 
 export default function BuddyGoalsTable() {
     const [goals, setGoals] = useState([]);
-    const userId = JSON.parse(localStorage.getItem('user')).email;
 
     const today = new Date();
     today.setUTCHours(0,0,0,0);
@@ -22,7 +21,7 @@ export default function BuddyGoalsTable() {
 
     const db = getFirestore(firebase);
     useEffect(() => { (async () => {
-        const { buddy } = (await getDoc(doc(db, 'users', userId))).data()?.settings ?? {};
+        const { buddy } = (await getDoc(doc(db, 'users', (await user).email))).data()?.settings ?? {};
         setGoals((await getDoc(doc(db, 'users', buddy, 'goals', todayStr))).data()?.goals ?? []);
     })(); }, []);
 

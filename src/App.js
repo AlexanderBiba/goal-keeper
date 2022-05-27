@@ -7,7 +7,6 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import DialogProvider from './DialogProvider';
-import SignIn from './routes/SignIn'
 import SetGoals from './routes/SetGoals';
 import MyGoals from './routes/MyGoals';
 import BuddyGoals from './routes/BuddyGoals';
@@ -91,12 +90,9 @@ export default function App() {
                 <Route
                     path='/'
                     element={(
-                        JSON.parse(localStorage.getItem('user'))?.email ?
-                            <Navigate to='my-goals' /> :
-                            <Navigate to='sign-in' />
+                        <Navigate to='my-goals' />
                     )}
                 />
-                <Route path='sign-in' element={<SignIn />} />
                 <Route path='my-goals' element={<MyGoals />} />
                 <Route path='buddy-goals' element={<BuddyGoals />} />
                 <Route path='set-goals' element={<SetGoals />} />

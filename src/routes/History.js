@@ -12,16 +12,15 @@ import {
 } from '@mui/material';
 import { collection, query, getDocs, getFirestore } from 'firebase/firestore/lite';
 import { useState, useEffect } from 'react';
-import firebase from '../firebase'
+import firebase, { user } from '../firebase'
 
 export default function History() {
     const [dateGoals, setDateGoals] = useState([]);
-    const userId = JSON.parse(localStorage.getItem('user')).email;
 
     const db = getFirestore(firebase);
     useEffect(() => { (async () => {
         const allGoals = [];
-        (await getDocs(query(collection(db, 'users', userId, 'goals'))) ?? []).forEach(doc => allGoals.push({
+        (await getDocs(query(collection(db, 'users', (await user).email, 'goals'))) ?? []).forEach(doc => allGoals.push({
             date: doc.id,
             goals: doc.data().goals
         }));
