@@ -5,13 +5,18 @@ import {
 } from '@mui/material';
 import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
 import { useState, useEffect } from 'react';
-import firebase, { user } from '../firebase'
+import firebase from '../firebase'
+import { useSelector } from 'react-redux';
 
 export default function Settings() {
     const [settings, setSettings] = useState({});
+    const user = useSelector(state => state.user.user);
 
     const db = getFirestore(firebase);
-    useEffect(() => { (async () => setSettings((await getDoc(doc(db, 'users', (await user).email))).data()?.settings ?? {}))(); }, []);
+    useEffect(() => {
+        if (!user) return;
+        (async () => setSettings((await getDoc(doc(db, 'users', user.email))).data()?.settings ?? {}))();
+    }, [user]);
 
     return (
         <form onSubmit={e => {

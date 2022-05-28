@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
-const firebase = initializeApp({
+export default initializeApp({
     apiKey: 'AIzaSyCoVtof9_4DfsWwpVEU71yUFtowZSzLmdE',
     authDomain: 'goalbuddy-da87e.firebaseapp.com',
     projectId: 'goalbuddy-da87e',
@@ -10,5 +9,3 @@ const firebase = initializeApp({
     appId: '1:819460212657:web:1e901728c07bfacb681f90',
     measurementId: 'G-DDVKK8ZZRS'
 });
-export default firebase;
-export const user = (async() => (await signInWithPopup(getAuth(firebase), new GoogleAuthProvider())).user)();

@@ -5,6 +5,10 @@ import '@fontsource/roboto/700.css';
 
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { signIn, signOut} from './redux/user';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
+import firebase from './firebase';
 
 import DialogProvider from './DialogProvider';
 import SetGoals from './routes/SetGoals';
@@ -15,6 +19,7 @@ import History from './routes/History';
 
 import {
     AppBar,
+    Button,
     Divider,
     Drawer,
     IconButton,
@@ -32,13 +37,15 @@ import {
     LibraryAdd as LibraryAddIcon,
     LibraryAddCheck as LibraryAddCheckIcon,
     History as HistoryIcon,
-    Settings as SettingsIcon,
-    Logout as LogoutIcon
+    Settings as SettingsIcon
 } from '@mui/icons-material';
 
 export default function App() {
     const [openDrawer, setOpenDrawer] = useState(false);
+    const user = useSelector(state => state.user.user);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const auth = getAuth(firebase);
 
     return (
         <DialogProvider>
@@ -46,6 +53,24 @@ export default function App() {
                 <Toolbar>
                     <IconButton onClick={() => setOpenDrawer(!openDrawer)}><MenuIcon /></IconButton>
                     <Typography>Goal Buddy</Typography>
+                    <Button
+                        variant='contained'
+                        onClick={() => dispatch(
+                            user ?
+                                async () => {
+                                    dispatch(signOut(await firebaseSignOut(auth)));
+                                } :
+                                async () => {
+                                    const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+                                    dispatch(signIn({
+                                        email: user.email,
+                                        uid: user.uid,
+                                        imageUrl: user.photoURL,
+                                        displayName: user.displayName
+                                    }))
+                                }
+                        )}
+                    >{user ? 'Sign Out' : 'Sign In'}</Button>
                 </Toolbar>
             </AppBar>
             <Toolbar />
@@ -71,8 +96,7 @@ export default function App() {
                 <Divider />
                 <List>
                     {[
-                        ['Settings', <SettingsIcon />, 'settings'],
-                        ['Sign Out', <LogoutIcon />, 'sign-in']
+                        ['Settings', <SettingsIcon />, 'settings']
                     ].map(([text, icon, route], index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemButton onClick={() => {

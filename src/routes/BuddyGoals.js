@@ -10,10 +10,12 @@ import {
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { getDoc, setDoc, doc, getFirestore } from 'firebase/firestore/lite';
-import firebase, { user } from '../firebase';
+import firebase from '../firebase';
+import { useSelector } from 'react-redux';
 
 export default function BuddyGoalsTable() {
     const [goals, setGoals] = useState([]);
+    const user = useSelector(state => state.user.user);
 
     const today = new Date();
     today.setUTCHours(0,0,0,0);
@@ -21,9 +23,10 @@ export default function BuddyGoalsTable() {
 
     const db = getFirestore(firebase);
     useEffect(() => { (async () => {
-        const { buddy } = (await getDoc(doc(db, 'users', (await user).email))).data()?.settings ?? {};
+        if (!user) return;
+        const { buddy } = (await getDoc(doc(db, 'users', user.email))).data()?.settings ?? {};
         setGoals((await getDoc(doc(db, 'users', buddy, 'goals', todayStr))).data()?.goals ?? []);
-    })(); }, []);
+    })(); }, [user]);
 
     return (
         <TableContainer component={Paper}>
