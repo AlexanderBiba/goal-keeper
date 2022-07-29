@@ -13,12 +13,12 @@ import {
     TextField,
     DialogActions,
     Button
-} from '@mui/material';
-import { useState, useContext, useEffect } from 'react';
-import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
-import { DialogContext } from '../DialogProvider';
-import firebase from '../firebase'
-import { useSelector } from 'react-redux';
+} from "@mui/material";
+import { useState, useContext, useEffect } from "react";
+import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
+import { DialogContext } from "../DialogProvider";
+import firebase from "../firebase"
+import { useSelector } from "react-redux";
 
 export default function GoalsTable() {
     const [goals, setGoals] = useState([]);
@@ -27,12 +27,12 @@ export default function GoalsTable() {
 
     const today = new Date();
     today.setUTCHours(0,0,0,0);
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split("T")[0];
 
     const db = getFirestore(firebase);
     useEffect(() => {
         if (!user) return;
-        (async () => setGoals((await getDoc(doc(db, 'users', user.email, 'goals', todayStr))).data()?.goals ?? []))();
+        (async () => setGoals((await getDoc(doc(db, "users", user.email, "goals", todayStr))).data()?.goals ?? []))();
     }, [user]);
 
     return (
@@ -40,7 +40,7 @@ export default function GoalsTable() {
             <Table>
                 <TableHead>
                     <TableRow >
-                        {['goals', 'proof'].map((h, idx) => (<TableCell key={idx}>{h}</TableCell>))}
+                        {["goals", "proof"].map((h, idx) => (<TableCell key={idx}>{h}</TableCell>))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -48,7 +48,7 @@ export default function GoalsTable() {
                         <TableRow key={idx} >
                             <TableCell>{item.goal}</TableCell>
                             <TableCell
-                                sx={{ cursor: 'pointer' }}
+                                sx={{ cursor: "pointer" }}
                                 onClick={() => openDialog((
                                     <Dialog open={true} onClose={closeDialog}>
                                         <form onSubmit={e => {
@@ -64,17 +64,17 @@ export default function GoalsTable() {
                                             <DialogContent>
                                                 <DialogContentText>Fill in how the goal was achieved, this will be validated by your buddy.</DialogContentText>
                                                 <TextField
-                                                    name='proof'
+                                                    name="proof"
                                                     autoFocus
-                                                    margin='dense'
-                                                    label='Achievement Proof'
+                                                    margin="dense"
+                                                    label="Achievement Proof"
                                                     fullWidth
                                                     defaultValue={item.proof}
                                                 />
                                             </DialogContent>
                                             <DialogActions>
                                                 <Button onClick={closeDialog}>Cancel</Button>
-                                                <Button variant='contained' type='submit'>Save</Button>
+                                                <Button variant="contained" type="submit">Save</Button>
                                             </DialogActions>
                                         </form>
                                     </Dialog>

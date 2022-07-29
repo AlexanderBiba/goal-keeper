@@ -13,13 +13,13 @@ import {
     TextField,
     DialogActions,
     Button
-} from '@mui/material';
-import { useState, useEffect, useContext } from 'react';
-import { setDoc, getDoc, doc, getFirestore } from 'firebase/firestore/lite';
-import { Delete } from '@mui/icons-material';
-import { DialogContext } from '../DialogProvider';
-import firebase from '../firebase'
-import { useSelector } from 'react-redux';
+} from "@mui/material";
+import { useState, useEffect, useContext } from "react";
+import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
+import { Delete } from "@mui/icons-material";
+import { DialogContext } from "../DialogProvider";
+import firebase from "../firebase"
+import { useSelector } from "react-redux";
 
 export default function SetGoalsTable() {
     const [goals, setGoals] = useState([]);
@@ -30,14 +30,14 @@ export default function SetGoalsTable() {
     today.setUTCHours(0,0,0,0);
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-    const todayStr = today.toISOString().split('T')[0];
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split("T")[0];
+    const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
     const db = getFirestore(firebase);
 
     useEffect(() => {
         if (!user) return;
-        (async () => setGoals((await getDoc(doc(db, 'users', (await user).email, 'goals', tomorrowStr))).data()?.goals ?? []))();
+        (async () => setGoals((await getDoc(doc(db, "users", (await user).email, "goals", tomorrowStr))).data()?.goals ?? []))();
     }, [user]);
 
     return (
@@ -54,11 +54,11 @@ export default function SetGoalsTable() {
                         <TableRow key={idx} >
                             <TableCell>
                                 <Delete
-                                    sx={{ cursor: 'pointer' }}
+                                    sx={{ cursor: "pointer" }}
                                     onClick={async() => {
                                         const updatedGoals = [...goals];
                                         updatedGoals.splice(idx, 1);
-                                        setDoc(doc(db, 'users', (await user).email, 'goals', tomorrowStr), { goals: updatedGoals });
+                                        setDoc(doc(db, "users", (await user).email, "goals", tomorrowStr), { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                     }} />
                             </TableCell>
@@ -68,7 +68,7 @@ export default function SetGoalsTable() {
                     <TableRow>
                         <TableCell
                             colSpan={2}
-                            sx={{ cursor: 'pointer' }}
+                            sx={{ cursor: "pointer" }}
                             onClick={() => openDialog((
                                 <Dialog open={true} onClose={closeDialog}>
                                     <form onSubmit={async e => {
@@ -76,7 +76,7 @@ export default function SetGoalsTable() {
                                         const goal = e.target.goal.value;
                                         if (!goal) return;
                                         const updatedGoals = [...goals, { goal }];
-                                        setDoc(doc(db, 'users', (await user).email, 'goals', tomorrowStr), { goals: updatedGoals });
+                                        setDoc(doc(db, "users", (await user).email, "goals", tomorrowStr), { goals: updatedGoals });
                                         setGoals(updatedGoals);
                                         closeDialog();
                                     }}>
@@ -84,16 +84,16 @@ export default function SetGoalsTable() {
                                         <DialogContent>
                                             <DialogContentText>Set a goal</DialogContentText>
                                             <TextField
-                                                name='goal'
+                                                name="goal"
                                                 autoFocus
-                                                margin='dense'
-                                                label='Goal'
+                                                margin="dense"
+                                                label="Goal"
                                                 fullWidth
                                             />
                                         </DialogContent>
                                         <DialogActions>
                                             <Button onClick={closeDialog}>Cancel</Button>
-                                            <Button variant='contained' type='submit'>Save</Button>
+                                            <Button variant="contained" type="submit">Save</Button>
                                         </DialogActions>
                                     </form>
                                 </Dialog>
