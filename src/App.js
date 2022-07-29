@@ -11,7 +11,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOu
 import firebase from "./firebase";
 
 import DialogProvider from "./DialogProvider";
-import SetGoals from "./routes/SetGoals";
 import MyGoals from "./routes/MyGoals";
 import BuddyGoals from "./routes/BuddyGoals";
 import Settings from "./routes/Settings";
@@ -30,7 +29,8 @@ import {
     ListItemIcon,
     ListItemText,
     Toolbar,
-    Typography
+    Typography,
+    Box
 } from "@mui/material";
 import {
     Menu as MenuIcon,
@@ -38,8 +38,24 @@ import {
     LibraryAdd as LibraryAddIcon,
     LibraryAddCheck as LibraryAddCheckIcon,
     History as HistoryIcon,
-    Settings as SettingsIcon
+    Settings as SettingsIcon,
+    Home as HomeIcon
 } from "@mui/icons-material";
+import {
+    createTheme,
+    ThemeProvider,
+} from '@mui/material/styles';
+
+const theme = createTheme({
+    typography: {
+        h1: {padding: "0.3em 0.75em"},
+        h2: {padding: "0.3em 0.75em"},
+        h3: {padding: "0.3em 0.75em"},
+        h4: {padding: "0.3em 0.75em"},
+        h5: {padding: "0.3em 0.75em"},
+        h6: {padding: "0.3em 0.75em"},
+    }
+});
 
 export default function App() {
     const [openDrawer, setOpenDrawer] = useState(false);
@@ -48,83 +64,83 @@ export default function App() {
     const navigate = useNavigate();
     const auth = getAuth(firebase);
 
+    const generateDrawerItem = ([text, icon, route], index) => (
+        <ListItem key={index} disablePadding>
+            <ListItemButton onClick={() => {
+                setOpenDrawer(!openDrawer);
+                navigate(route);
+            }}>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText primary={text} />
+            </ListItemButton>
+        </ListItem>
+    )
+
     return (
-        <DialogProvider>
-            <AppBar>
-                <Toolbar>
-                    <IconButton disabled={!user} onClick={() => setOpenDrawer(!openDrawer)}><MenuIcon /></IconButton>
-                    <Typography variant="h6" sx={{ flexGrow: 1, p: "0.5em" }}>Goal Buddy</Typography>
-                    <Button
-                        variant="contained"
-                        onClick={() => dispatch(
-                            user ?
-                                async () => {
-                                    dispatch(signOut(await firebaseSignOut(auth)));
-                                } :
-                                async () => {
-                                    const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
-                                    dispatch(signIn({
-                                        email: user.email,
-                                        uid: user.uid,
-                                        imageUrl: user.photoURL,
-                                        displayName: user.displayName
-                                    }))
-                                }
-                        )}
-                    >{user ? "Sign Out" : "Sign In"}</Button>
-                </Toolbar>
-            </AppBar>
-            <Toolbar />
-            <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
-                <List sx={{ width: 250 }}>
-                    {[
-                        ["My Goals", <LibraryBooksIcon />, "my-goals"],
-                        ["Buddy Goals", <LibraryAddCheckIcon />, "buddy-goals"],
-                        ["Set Goals", <LibraryAddIcon />, "set-goals"],
-                        ["History", <HistoryIcon />, "history"],
-                    ].map(([text, icon, route], index) => (
-                        <ListItem key={index} disablePadding>
-                            <ListItemButton onClick={() => {
-                                setOpenDrawer(!openDrawer);
-                                navigate(route);
-                            }}>
-                                <ListItemIcon>{icon}</ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    {[
-                        ["Settings", <SettingsIcon />, "settings"]
-                    ].map(([text, icon, route], index) => (
-                        <ListItem key={index} disablePadding>
-                            <ListItemButton onClick={() => {
-                                setOpenDrawer(!openDrawer);
-                                navigate(route);
-                            }}>
-                                <ListItemIcon>{icon}</ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-            <Routes>
-                <Route
-                    path="/"
-                    element={(
-                        <Navigate to="home" />
-                    )}
-                />
-                <Route path="home" element={<Home />} />
-                <Route path="my-goals" element={<MyGoals />} />
-                <Route path="buddy-goals" element={<BuddyGoals />} />
-                <Route path="set-goals" element={<SetGoals />} />
-                <Route path="history" element={<History />} />
-                <Route path="settings" element={<Settings />} />
-            </Routes>
-        </DialogProvider>
+        <ThemeProvider theme={theme}>
+            <DialogProvider>
+                <AppBar>
+                    <Toolbar>
+                        <IconButton disabled={!user} onClick={() => setOpenDrawer(!openDrawer)}><MenuIcon /></IconButton>
+                        <Typography variant="h6" sx={{ flexGrow: 1, p: "0.5em" }}>Goal Buddy</Typography>
+                        <Button
+                            variant="contained"
+                            onClick={() => dispatch(
+                                user ?
+                                    async () => {
+                                        dispatch(signOut(await firebaseSignOut(auth)));
+                                    } :
+                                    async () => {
+                                        const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+                                        dispatch(signIn({
+                                            email: user.email,
+                                            uid: user.uid,
+                                            imageUrl: user.photoURL,
+                                            displayName: user.displayName
+                                        }))
+                                    }
+                            )}
+                        >{user ? "Sign Out" : "Sign In"}</Button>
+                    </Toolbar>
+                </AppBar>
+                <Toolbar />
+                <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
+                    <List sx={{ width: 250 }}>
+                        {[
+                            ["Home", <HomeIcon />, "home"]
+                        ].map(generateDrawerItem)}
+                    </List >
+                    <Divider />
+                    <List>
+                        {[
+                            ["My Goals", <LibraryBooksIcon />, "my-goals"],
+                            ["Buddy Goals", <LibraryAddCheckIcon />, "buddy-goals"],
+                            ["History", <HistoryIcon />, "history"],
+                        ].map(generateDrawerItem)}
+                    </List>
+                    <Divider />
+                    <List>
+                        {[
+                            ["Settings", <SettingsIcon />, "settings"]
+                        ].map(generateDrawerItem)}
+                    </List>
+                </Drawer>
+                <Box sx={{ p: "1em" }}>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={(
+                                <Navigate to="home" />
+                            )}
+                        />
+                        <Route path="home" element={<Home />} />
+                        <Route path="my-goals" element={<MyGoals />} />
+                        <Route path="buddy-goals" element={<BuddyGoals />} />
+                        <Route path="history" element={<History />} />
+                        <Route path="settings" element={<Settings />} />
+                    </Routes>
+                </Box>
+            </DialogProvider>
+        </ThemeProvider>
     )
 }

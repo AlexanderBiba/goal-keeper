@@ -31,16 +31,16 @@ export default function History() {
     })(); }, [user]);
 
     return (
-        <Box>
-            {dateGoals.map(({ date, goals }, i) => (
+        <Box component={Paper} sx={{p: "1em"}}>
+            {dateGoals.length ? dateGoals.map(({ date, goals }, i) => (
                 <Box key={i} >
-                    <Typography variant="subtitle1" >{date}</Typography>
-                    <TableContainer component={Paper}>
+                    <Typography variant="h5" >{date}</Typography>
+                    <TableContainer component={Paper} sx={{my: "0.5em"}}>
                         <Table>
                             <TableHead>
                                 <TableRow >
-                                    <TableCell>Goal</TableCell>
-                                    <TableCell>Proof</TableCell>
+                                    <TableCell sx={{width: "12em"}}>Goal</TableCell>
+                                    <TableCell>Description</TableCell>
                                     <TableCell padding="checkbox" />
                                 </TableRow>
                             </TableHead>
@@ -62,7 +62,7 @@ export default function History() {
                         </Table>
                     </TableContainer>
                 </Box>
-            ))}
+            )) : <Typography>No records found, set some goals in My Goals</Typography>}
         </Box>
     )
 }
