@@ -11,8 +11,8 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOu
 import firebase from "./firebase";
 
 import DialogProvider from "./DialogProvider";
-import MyGoals from "./routes/MyGoals";
-import BuddyGoals from "./routes/BuddyGoals";
+import TaskEditor from "./routes/TaskEditor";
+import TaskValidator from "./routes/TaskValidator";
 import Settings from "./routes/Settings";
 import History from "./routes/History";
 import Home from "./routes/Home";
@@ -35,7 +35,6 @@ import {
 import {
     Menu as MenuIcon,
     LibraryBooks as LibraryBooksIcon,
-    LibraryAdd as LibraryAddIcon,
     LibraryAddCheck as LibraryAddCheckIcon,
     History as HistoryIcon,
     Settings as SettingsIcon,
@@ -82,7 +81,7 @@ export default function App() {
                 <AppBar>
                     <Toolbar>
                         <IconButton disabled={!user} onClick={() => setOpenDrawer(!openDrawer)}><MenuIcon /></IconButton>
-                        <Typography variant="h6" sx={{ flexGrow: 1, p: "0.5em" }}>Goal Buddy</Typography>
+                        <Typography variant="h6" sx={{ flexGrow: 1, p: "0.5em" }}>Goal Keeper</Typography>
                         <Button
                             variant="contained"
                             onClick={() => dispatch(
@@ -113,8 +112,8 @@ export default function App() {
                     <Divider />
                     <List>
                         {[
-                            ["My Goals", <LibraryBooksIcon />, "my-goals"],
-                            ["Buddy Goals", <LibraryAddCheckIcon />, "buddy-goals"],
+                            ["Set Tasks", <LibraryBooksIcon />, "task-editor"],
+                            ["Validate Tasks", <LibraryAddCheckIcon />, "task-validator"],
                             ["History", <HistoryIcon />, "history"],
                         ].map(generateDrawerItem)}
                     </List>
@@ -134,8 +133,8 @@ export default function App() {
                             )}
                         />
                         <Route path="home" element={<Home />} />
-                        <Route path="my-goals" element={<MyGoals />} />
-                        <Route path="buddy-goals" element={<BuddyGoals />} />
+                        <Route path="task-editor" element={<TaskEditor />} />
+                        <Route path="task-validator" element={<TaskValidator />} />
                         <Route path="history" element={<History />} />
                         <Route path="settings" element={<Settings />} />
                     </Routes>

@@ -29,8 +29,8 @@ const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const tomorrowStr = getDateStr(tomorrow);
 
-export default function SetGoalsTable() {
-    const [goals, setGoals] = useState([]);
+export default function SetTasksTable() {
+    const [tasks, setTasks] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const user = useSelector(state => state.user.user);
 
@@ -38,28 +38,28 @@ export default function SetGoalsTable() {
 
     useEffect(() => {
         if (!user) return;
-        (async () => setGoals((await getDoc(doc(db, "users", (await user).email, "goals", tomorrowStr))).data()?.goals ?? []))();
+        (async () => setTasks((await getDoc(doc(db, "users", (await user).email, "tasks", tomorrowStr))).data()?.tasks ?? []))();
     }, [user]);
 
-    const addNewGoalDialog = (
+    const addNewTaskDialog = (
         <Dialog open={true} onClose={closeDialog} fullWidth >
             <form onSubmit={async e => {
                 e.preventDefault();
-                const goal = e.target.goal.value;
-                if (!goal) return;
-                const updatedGoals = [...goals, { goal }];
-                setDoc(doc(db, "users", user.email, "goals", tomorrowStr), { goals: updatedGoals });
-                setGoals(updatedGoals);
+                const task = e.target.task.value;
+                if (!task) return;
+                const updatedTasks = [...tasks, { task }];
+                setDoc(doc(db, "users", user.email, "tasks", tomorrowStr), { tasks: updatedTasks });
+                setTasks(updatedTasks);
                 closeDialog();
             }}>
-                <DialogTitle>Add New Goal</DialogTitle>
+                <DialogTitle>Add New Task</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>Set a goal</DialogContentText>
+                    <DialogContentText>Set a task</DialogContentText>
                     <TextField
-                        name="goal"
+                        name="task"
                         autoFocus
                         margin="dense"
-                        label="Goal"
+                        label="Task"
                         fullWidth
                     />
                 </DialogContent>
@@ -73,29 +73,29 @@ export default function SetGoalsTable() {
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h4">Tomorrow's Goals</Typography>
-            {goals.length ? <TableContainer component={Paper} >
+            <Typography variant="h4">Tomorrow's Tasks</Typography>
+            {tasks.length ? <TableContainer component={Paper} >
                 <Table>
                     <TableHead>
                         <TableRow >
                             <TableCell sx={{width: "1em"}}></TableCell>
-                            <TableCell>Goal</TableCell>
+                            <TableCell>Task</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {goals.map((item, idx) => (
+                        {tasks.map((item, idx) => (
                             <TableRow key={idx} >
                                 <TableCell>
                                     <IconButton
                                         onClick={async() => {
-                                            const updatedGoals = [...goals];
-                                            updatedGoals.splice(idx, 1);
-                                            setDoc(doc(db, "users", user.email, "goals", tomorrowStr), { goals: updatedGoals });
-                                            setGoals(updatedGoals);
+                                            const updatedTasks = [...tasks];
+                                            updatedTasks.splice(idx, 1);
+                                            setDoc(doc(db, "users", user.email, "tasks", tomorrowStr), { tasks: updatedTasks });
+                                            setTasks(updatedTasks);
                                         }} 
                                     ><Delete/></IconButton>
                                 </TableCell>
-                                <TableCell>{item.goal}</TableCell>
+                                <TableCell>{item.task}</TableCell>
                             </TableRow>
                         ))}
                         <TableRow>
@@ -104,19 +104,19 @@ export default function SetGoalsTable() {
                                 sx={{ textAlign: "right" }}
                             ><Button
                                 variant="contained"
-                                onClick={() => openDialog(addNewGoalDialog)}
-                            >Add Another Goal</Button></TableCell>
+                                onClick={() => openDialog(addNewTaskDialog)}
+                            >Add Another Task</Button></TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer> : <Box>
-                <Typography variant="h6">You don't have any goals set for tomorrow,
+                <Typography variant="h6">You don't have any tasks set for tomorrow,
                     <Box component="span">
                         <Typography variant="h6"
                             sx={{ cursor: "pointer", color: "blue", p: 0 }}
                             display="inline"
-                            onClick={() => openDialog(addNewGoalDialog)}
-                        > set first goal</Typography>
+                            onClick={() => openDialog(addNewTaskDialog)}
+                        > set first task</Typography>
                     </Box>
                 </Typography>
             </Box>}

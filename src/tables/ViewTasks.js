@@ -25,55 +25,55 @@ import { getDateStr } from "../dateUtils";
 
 const todayStr = getDateStr();
 
-export default function GoalsTable() {
-    const [goals, setGoals] = useState([]);
+export default function TasksTable() {
+    const [tasks, setTasks] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const user = useSelector(state => state.user.user);
 
     const db = getFirestore(firebase);
     useEffect(() => {
         if (!user) return;
-        (async () => setGoals((await getDoc(doc(db, "users", user.email, "goals", todayStr))).data()?.goals ?? []))();
+        (async () => setTasks((await getDoc(doc(db, "users", user.email, "tasks", todayStr))).data()?.tasks ?? []))();
     }, [user]);
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h4">Today's Goals</Typography>
-            {goals.length ? <TableContainer component={Paper}>
+            <Typography variant="h4">Today's Tasks</Typography>
+            {tasks.length ? <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow >
-                            <TableCell sx={{width: "16em"}}>Goals</TableCell>
+                            <TableCell sx={{width: "16em"}}>Tasks</TableCell>
                             <TableCell>Description</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {goals.map((item, idx) => (
+                        {tasks.map((item, idx) => (
                             <TableRow key={idx} >
-                                <TableCell>{item.goal}</TableCell>
+                                <TableCell>{item.task}</TableCell>
                                 <TableCell
                                     sx={{ cursor: "pointer" }}
                                     onClick={() => openDialog((
                                         <Dialog open={true} onClose={closeDialog} fullWidth >
                                             <form onSubmit={e => {
                                                 e.preventDefault();
-                                                const proof = e.target.proof.value;
-                                                if (!proof) return;
-                                                const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof });
-                                                setDoc(doc(db, "users", user.email, "goals", todayStr), { goals: updatedGoals });
-                                                setGoals(updatedGoals);
+                                                const description = e.target.description.value;
+                                                if (!description) return;
+                                                const updatedTasks = tasks.map((g, i) => (i !== idx) ? g : { ...g, description });
+                                                setDoc(doc(db, "users", user.email, "tasks", todayStr), { tasks: updatedTasks });
+                                                setTasks(updatedTasks);
                                                 closeDialog();
                                             }}>
-                                                <DialogTitle>Modify Goal Achievement</DialogTitle>
+                                                <DialogTitle>Modify Task Details</DialogTitle>
                                                 <DialogContent>
-                                                    <DialogContentText>Fill in how the goal was achieved, this will be validated by your buddy.</DialogContentText>
+                                                    <DialogContentText>Describe how the task was completed</DialogContentText>
                                                     <TextField
-                                                        name="proof"
+                                                        name="description"
                                                         autoFocus
                                                         margin="dense"
-                                                        label="Achievement Proof"
+                                                        label="Actions Taken"
                                                         fullWidth
-                                                        defaultValue={item.proof}
+                                                        defaultValue={item.description}
                                                     />
                                                 </DialogContent>
                                                 <DialogActions>
@@ -83,12 +83,12 @@ export default function GoalsTable() {
                                             </form>
                                         </Dialog>
                                     ))}
-                                >{item.proof}</TableCell>
+                                >{item.description}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer> : <Typography variant="h6">You don't have any goals set for today</Typography>}
+            </TableContainer> : <Typography variant="h6">You don't have any tasks set for today</Typography>}
         </Box>
     )
 }

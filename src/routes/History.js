@@ -16,39 +16,39 @@ import firebase from "../firebase"
 import { useSelector } from "react-redux";
 
 export default function History() {
-    const [dateGoals, setDateGoals] = useState([]);
+    const [dateTasks, setDateTasks] = useState([]);
     const user = useSelector(state => state.user.user);
 
     const db = getFirestore(firebase);
     useEffect(() => { (async () => {
         if (!user) return;
-        const allGoals = [];
-        (await getDocs(query(collection(db, "users", user.email, "goals"))) ?? []).forEach(doc => allGoals.push({
+        const allTasks = [];
+        (await getDocs(query(collection(db, "users", user.email, "tasks"))) ?? []).forEach(doc => allTasks.push({
             date: doc.id,
-            goals: doc.data().goals
+            tasks: doc.data().tasks
         }));
-        setDateGoals(allGoals);
+        setDateTasks(allTasks);
     })(); }, [user]);
 
     return (
         <Box component={Paper} sx={{p: "1em"}}>
-            {dateGoals.length ? dateGoals.map(({ date, goals }, i) => (
+            {dateTasks.length ? dateTasks.map(({ date, tasks }, i) => (
                 <Box key={i} >
                     <Typography variant="h5" >{date}</Typography>
                     <TableContainer component={Paper} sx={{my: "0.5em"}}>
                         <Table>
                             <TableHead>
                                 <TableRow >
-                                    <TableCell sx={{width: "12em"}}>Goal</TableCell>
+                                    <TableCell sx={{width: "12em"}}>Task</TableCell>
                                     <TableCell>Description</TableCell>
                                     <TableCell padding="checkbox" />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {goals.map(({ goal, proof, validated }, j) => (
+                                {tasks.map(({ task, description, validated }, j) => (
                                     <TableRow key={j} >
-                                        <TableCell>{goal}</TableCell>
-                                        <TableCell>{proof}</TableCell>
+                                        <TableCell>{task}</TableCell>
+                                        <TableCell>{description}</TableCell>
                                         <TableCell padding="checkbox">
                                             <Checkbox
                                                 checked={validated ?? false}
@@ -62,7 +62,7 @@ export default function History() {
                         </Table>
                     </TableContainer>
                 </Box>
-            )) : <Typography>No records found, set some goals in My Goals</Typography>}
+            )) : <Typography>No records found, set some tasks in My Tasks</Typography>}
         </Box>
     )
 }
