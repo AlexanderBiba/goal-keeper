@@ -16,7 +16,7 @@ import {
 export default function Home() {
     return (
         <Box component={Paper} sx={{ p: "0.75em" }} >
-            <Typography variant="h4" sx={{ textAlign: "center" }} >Welcome to Goal Keeper!</Typography>
+            <Typography variant="h5" sx={{ textAlign: "center" }} >Welcome to Goal Keeper!</Typography>
             <Typography variant="h6">Goal Keeper is a ToDo list with a twist!</Typography>
             <Typography variant="h6">Goal Keeper allows you to:</Typography>
             <List>

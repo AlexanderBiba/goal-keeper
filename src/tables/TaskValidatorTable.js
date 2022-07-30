@@ -34,7 +34,7 @@ export default function TaskValidatorTable({ tomorrow, user, setLoading }) {
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h4">Tasks{ tomorrow ? ' For Tomorrow' : ''}</Typography>
+            <Typography variant="h5">Tasks{ tomorrow ? ' For Tomorrow' : ''}</Typography>
             {tasks.length ? <TableContainer component={Paper}>
                 <Table>
                     <TableHead>

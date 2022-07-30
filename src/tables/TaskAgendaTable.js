@@ -46,9 +46,9 @@ export default function TaskAgendaTable({ setLoading }) {
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h4">
+            <Typography variant="h5">
                 Today's Tasks
-                <Tooltip title="You can only set tasks for tomorrow"><IconButton><InfoIcon /></IconButton></Tooltip>
+                <Tooltip enterTouchDelay={0} title="You can only set tasks for tomorrow"><IconButton><InfoIcon /></IconButton></Tooltip>
             </Typography>
             {tasks.length ? <TableContainer component={Paper}>
                 <Table>

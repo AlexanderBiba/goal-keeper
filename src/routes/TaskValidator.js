@@ -31,10 +31,10 @@ export default function TaskValidator() {
 
     return (
         <Box>
-            <Typography variant="h6">Viewing Tasks For {userViewed}<Tooltip title="You can only view your Goal Keeper's tasks if they specify you as their Goal Keeper as well"><IconButton><InfoIcon /></IconButton></Tooltip></Typography>
             <TaskValidatorTable setLoading={setLoading} user={userViewed}/>
             <TaskValidatorTable setLoading={setLoading} user={userViewed} tomorrow={true}/>
             <Backdrop open={loading}><CircularProgress/></Backdrop>
+            <Typography variant="h6">Viewing Tasks For {userViewed}<Tooltip enterTouchDelay={0} title="You can only view your Goal Keeper's tasks if they specify you as their Goal Keeper as well"><IconButton><InfoIcon /></IconButton></Tooltip></Typography>
         </Box>
     )
 }

@@ -76,7 +76,7 @@ export default function TaskEditorTable({ setLoading }) {
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h4">Tomorrow's Tasks</Typography>
+            <Typography variant="h5">Tomorrow's Tasks</Typography>
             {tasks.length ? <TableContainer component={Paper} >
                 <Table>
                     <TableHead>
