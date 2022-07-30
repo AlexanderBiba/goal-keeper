@@ -1,17 +1,20 @@
 import {
     Box,
-    Typography
+    Backdrop,
+    CircularProgress
 } from "@mui/material";
-import ViewTasks from "../tables/ViewTasks";
-import SetTasks from "../tables/SetTasks";
+import TaskAgendaTable from "../tables/TaskAgendaTable";
+import TaskEditorTable from "../tables/TaskEditorTable";
+import { useState } from "react";
 
 export default function TaskEditor() {
+    const [loading, setLoading] = useState(true);
+
     return (
         <Box>
-            <ViewTasks/>
-            <SetTasks/>
-            <Typography variant="h6">You can only set tasks for tomorrow</Typography>
-            <Typography variant="h6">Your can only validate today's tasks</Typography>
+            <TaskAgendaTable setLoading={setLoading}/>
+            <TaskEditorTable setLoading={setLoading}/>
+            <Backdrop open={loading}><CircularProgress/></Backdrop>
         </Box>
     )
 }

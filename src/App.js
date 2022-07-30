@@ -133,10 +133,10 @@ export default function App() {
                             )}
                         />
                         <Route path="home" element={<Home />} />
-                        <Route path="task-editor" element={<TaskEditor />} />
-                        <Route path="task-validator" element={<TaskValidator />} />
-                        <Route path="history" element={<History />} />
-                        <Route path="settings" element={<Settings />} />
+                        <Route path="task-editor" element={<TaskEditor/>} />
+                        <Route path="task-validator" element={<TaskValidator/>} />
+                        <Route path="history" element={<History/>} />
+                        <Route path="settings" element={<Settings/>} />
                     </Routes>
                 </Box>
             </DialogProvider>

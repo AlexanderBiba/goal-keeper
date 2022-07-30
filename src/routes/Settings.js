@@ -4,7 +4,12 @@ import {
     Stack,
     FormControlLabel,
     Checkbox,
-    Typography
+    Typography,
+    FormGroup,
+    Alert,
+    Snackbar,
+    Backdrop,
+    CircularProgress
 } from "@mui/material";
 import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
 import { useState, useEffect } from "react";
@@ -13,6 +18,8 @@ import { useSelector } from "react-redux";
 
 export default function Settings() {
     const [settings, setSettings] = useState({ goalKeeper: '', goalKeeperEnabled: false });
+    const [successAlert, setSuccessAlert] = useState();
+    const [loading, setLoading] = useState(true);
     const user = useSelector(state => state.user.user);
 
     const db = getFirestore(firebase);
@@ -22,19 +29,17 @@ export default function Settings() {
             const settings = (await getDoc(doc(db, "users", user.email))).data()?.settings ?? {};
             settings.goalKeeperEnabled = ![null, undefined].includes(settings.goalKeeper)
             setSettings(settings);
+            setLoading(false);
         })();
     }, [user]);
 
     return (
-        <form onSubmit={e => {
-            e.preventDefault();
-            setDoc(doc(db, "users", user.email), { settings: { goalKeeper: settings.goalKeeperEnabled ? settings.goalKeeper : null } });
-        }}>
+        <FormGroup>
             <FormControlLabel
                 control={
                     <Checkbox
                         checked={settings.goalKeeperEnabled}
-                        onClick={() => setSettings(settings => ({ ...settings, goalKeeperEnabled: !settings.goalKeeperEnabled}))}/>
+                        onClick={() => setSettings(settings => ({ ...settings, goalKeeperEnabled: !settings.goalKeeperEnabled }))} />
                 }
                 label="Designate a Goal Keeper"
             />
@@ -42,7 +47,7 @@ export default function Settings() {
             <TextField
                 name="goalKeeper"
                 value={settings.goalKeeper ?? ""}
-                onChange={e => setSettings(settings => ({ ...settings, goalKeeper: e.target.value}))}
+                onChange={e => setSettings(settings => ({ ...settings, goalKeeper: e.target.value }))}
                 autoFocus
                 margin="dense"
                 label="Email"
@@ -52,9 +57,17 @@ export default function Settings() {
             <Stack direction="row" justifyContent="flex-end" >
                 <Button
                     variant="contained"
-                    type="submit"
+                    onClick={async e => {
+                        e.preventDefault();
+                        await setDoc(doc(db, "users", user.email), { settings: { goalKeeper: settings.goalKeeperEnabled ? settings.goalKeeper : null } });
+                        setSuccessAlert(true);
+                    }}
                 >Save</Button>
             </Stack>
-        </form>
+            <Snackbar open={successAlert} autoHideDuration={6000} onClose={() => setSuccessAlert(false)}>
+                <Alert onClose={() => setSuccessAlert(false)} severity="success" >Settings saved successfuly</Alert>
+            </Snackbar>
+            <Backdrop open={loading}><CircularProgress/></Backdrop>
+        </FormGroup>
     );
 }

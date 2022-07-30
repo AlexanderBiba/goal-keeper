@@ -8,7 +8,9 @@ import {
     Paper,
     Box,
     Typography,
-    Checkbox
+    Checkbox,
+    Backdrop,
+    CircularProgress
 } from "@mui/material";
 import { collection, query, getDocs, getFirestore } from "firebase/firestore/lite";
 import { useState, useEffect } from "react";
@@ -17,18 +19,22 @@ import { useSelector } from "react-redux";
 
 export default function History() {
     const [dateTasks, setDateTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
     const user = useSelector(state => state.user.user);
 
     const db = getFirestore(firebase);
-    useEffect(() => { (async () => {
+    useEffect(() => {
         if (!user) return;
-        const allTasks = [];
-        (await getDocs(query(collection(db, "users", user.email, "tasks"))) ?? []).forEach(doc => allTasks.push({
-            date: doc.id,
-            tasks: doc.data().tasks
-        }));
-        setDateTasks(allTasks);
-    })(); }, [user]);
+        (async () => {
+            const allTasks = [];
+            (await getDocs(query(collection(db, "users", user.email, "tasks"))) ?? []).forEach(doc => doc.data().tasks.length && allTasks.push({
+                date: doc.id,
+                tasks: doc.data().tasks
+            }));
+            setDateTasks(allTasks);
+            setLoading(false);
+        })();
+    }, [user]);
 
     return (
         <Box component={Paper} sx={{p: "1em"}}>
@@ -63,6 +69,7 @@ export default function History() {
                     </TableContainer>
                 </Box>
             )) : <Typography>No records found, set some tasks in My Tasks</Typography>}
+            <Backdrop open={loading}><CircularProgress/></Backdrop>
         </Box>
     )
 }

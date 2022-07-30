@@ -20,14 +20,17 @@ const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const tomorrowStr = getDateStr(tomorrow);
 
-export default function ValidateTasksTable({ tomorrow, user }) {
+export default function TaskValidatorTable({ tomorrow, user, setLoading }) {
     const [tasks, setTasks] = useState([]);
 
     const db = getFirestore(firebase);
-    useEffect(() => { (async () => {
+    useEffect(() => {
         if (!user) return;
-        setTasks((await getDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
-    })(); }, [user]);
+        (async () => {
+            setTasks((await getDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
+            setLoading(false);
+        })();
+    }, [user]);
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>

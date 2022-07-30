@@ -14,7 +14,9 @@ import {
     DialogActions,
     Button,
     Box,
-    Typography
+    Typography,
+    Tooltip,
+    IconButton
 } from "@mui/material";
 import { useState, useContext, useEffect } from "react";
 import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
@@ -22,10 +24,13 @@ import { DialogContext } from "../DialogProvider";
 import firebase from "../firebase"
 import { useSelector } from "react-redux";
 import { getDateStr } from "../dateUtils";
+import {
+    Info as InfoIcon
+} from "@mui/icons-material";
 
 const todayStr = getDateStr();
 
-export default function TasksTable() {
+export default function TaskAgendaTable({ setLoading }) {
     const [tasks, setTasks] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const user = useSelector(state => state.user.user);
@@ -33,12 +38,18 @@ export default function TasksTable() {
     const db = getFirestore(firebase);
     useEffect(() => {
         if (!user) return;
-        (async () => setTasks((await getDoc(doc(db, "users", user.email, "tasks", todayStr))).data()?.tasks ?? []))();
+        (async () => {
+            setTasks((await getDoc(doc(db, "users", user.email, "tasks", todayStr))).data()?.tasks ?? []);
+            setLoading(false);
+        })();
     }, [user]);
 
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h4">Today's Tasks</Typography>
+            <Typography variant="h4">
+                Today's Tasks
+                <Tooltip title="You can only set tasks for tomorrow"><IconButton><InfoIcon /></IconButton></Tooltip>
+            </Typography>
             {tasks.length ? <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -88,7 +99,7 @@ export default function TasksTable() {
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer> : <Typography variant="h6">You don't have any tasks set for today</Typography>}
+            </TableContainer> : <Typography variant="h6">You didn't set any tasks for today, set some for tomorrow</Typography>}
         </Box>
     )
 }

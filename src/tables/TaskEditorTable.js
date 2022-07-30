@@ -29,7 +29,7 @@ const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const tomorrowStr = getDateStr(tomorrow);
 
-export default function SetTasksTable() {
+export default function TaskEditorTable({ setLoading }) {
     const [tasks, setTasks] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const user = useSelector(state => state.user.user);
@@ -38,7 +38,10 @@ export default function SetTasksTable() {
 
     useEffect(() => {
         if (!user) return;
-        (async () => setTasks((await getDoc(doc(db, "users", (await user).email, "tasks", tomorrowStr))).data()?.tasks ?? []))();
+        (async () => {
+            setTasks((await getDoc(doc(db, "users", (await user).email, "tasks", tomorrowStr))).data()?.tasks ?? []);
+            setLoading(false);
+        })();
     }, [user]);
 
     const addNewTaskDialog = (
