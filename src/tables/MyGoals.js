@@ -21,15 +21,14 @@ import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
 import { DialogContext } from "../DialogProvider";
 import firebase from "../firebase"
 import { useSelector } from "react-redux";
+import { getDateStr } from "../dateUtils";
+
+const todayStr = getDateStr();
 
 export default function GoalsTable() {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const user = useSelector(state => state.user.user);
-
-    const today = new Date();
-    today.setUTCHours(0,0,0,0);
-    const todayStr = today.toISOString().split("T")[0];
 
     const db = getFirestore(firebase);
     useEffect(() => {
@@ -40,11 +39,12 @@ export default function GoalsTable() {
     return (
         <Box component={Paper} sx={{m: "1em", p: "1em"}}>
             <Typography variant="h4">Today's Goals</Typography>
-            {goals.length ? <TableContainer>
+            {goals.length ? <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow >
-                            {["goals", "proof"].map((h, idx) => (<TableCell key={idx}>{h}</TableCell>))}
+                            <TableCell sx={{width: "16em"}}>Goals</TableCell>
+                            <TableCell>Description</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -54,13 +54,13 @@ export default function GoalsTable() {
                                 <TableCell
                                     sx={{ cursor: "pointer" }}
                                     onClick={() => openDialog((
-                                        <Dialog open={true} onClose={closeDialog}>
+                                        <Dialog open={true} onClose={closeDialog} fullWidth >
                                             <form onSubmit={e => {
                                                 e.preventDefault();
                                                 const proof = e.target.proof.value;
                                                 if (!proof) return;
                                                 const updatedGoals = goals.map((g, i) => (i !== idx) ? g : { ...g, proof });
-                                                setDoc(doc, { goals: updatedGoals });
+                                                setDoc(doc(db, "users", user.email, "goals", todayStr), { goals: updatedGoals });
                                                 setGoals(updatedGoals);
                                                 closeDialog();
                                             }}>

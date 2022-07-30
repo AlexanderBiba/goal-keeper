@@ -23,18 +23,16 @@ import { Delete } from "@mui/icons-material";
 import { DialogContext } from "../DialogProvider";
 import firebase from "../firebase"
 import { useSelector } from "react-redux";
+import { getDateStr } from "../dateUtils";
+
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+const tomorrowStr = getDateStr(tomorrow);
 
 export default function SetGoalsTable() {
     const [goals, setGoals] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
     const user = useSelector(state => state.user.user);
-
-    const today = new Date();
-    today.setUTCHours(0,0,0,0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    const todayStr = today.toISOString().split("T")[0];
-    const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
     const db = getFirestore(firebase);
 
@@ -44,13 +42,13 @@ export default function SetGoalsTable() {
     }, [user]);
 
     const addNewGoalDialog = (
-        <Dialog open={true} onClose={closeDialog}>
+        <Dialog open={true} onClose={closeDialog} fullWidth >
             <form onSubmit={async e => {
                 e.preventDefault();
                 const goal = e.target.goal.value;
                 if (!goal) return;
                 const updatedGoals = [...goals, { goal }];
-                setDoc(doc(db, "users", (await user).email, "goals", tomorrowStr), { goals: updatedGoals });
+                setDoc(doc(db, "users", user.email, "goals", tomorrowStr), { goals: updatedGoals });
                 setGoals(updatedGoals);
                 closeDialog();
             }}>
@@ -80,8 +78,8 @@ export default function SetGoalsTable() {
                 <Table>
                     <TableHead>
                         <TableRow >
-                            <TableCell></TableCell>
-                            <TableCell sx={{width: 1}}>Goal</TableCell>
+                            <TableCell sx={{width: "1em"}}></TableCell>
+                            <TableCell>Goal</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -92,7 +90,7 @@ export default function SetGoalsTable() {
                                         onClick={async() => {
                                             const updatedGoals = [...goals];
                                             updatedGoals.splice(idx, 1);
-                                            setDoc(doc(db, "users", (await user).email, "goals", tomorrowStr), { goals: updatedGoals });
+                                            setDoc(doc(db, "users", user.email, "goals", tomorrowStr), { goals: updatedGoals });
                                             setGoals(updatedGoals);
                                         }} 
                                     ><Delete/></IconButton>

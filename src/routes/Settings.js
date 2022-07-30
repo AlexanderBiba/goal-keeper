@@ -21,7 +21,7 @@ export default function Settings() {
     return (
         <form onSubmit={e => {
             e.preventDefault();
-            setDoc(doc, { settings });
+            setDoc(doc(db, "users", user.email), { settings });
         }}>
             <TextField
                 name="buddy"
