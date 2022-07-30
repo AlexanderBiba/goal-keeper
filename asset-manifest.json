@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/goal-buddy/static/css/main.91e68815.css",
-    "main.js": "/goal-buddy/static/js/main.f7151590.js",
+    "main.js": "/goal-buddy/static/js/main.adeeda91.js",
     "static/media/roboto-all-500-normal.woff": "/goal-buddy/static/media/roboto-all-500-normal.52cb737b682eb9661ee1.woff",
     "static/media/roboto-all-700-normal.woff": "/goal-buddy/static/media/roboto-all-700-normal.ef6d1d09b20b877fee4e.woff",
     "static/media/roboto-all-400-normal.woff": "/goal-buddy/static/media/roboto-all-400-normal.376ea5d93f71583052f6.woff",
@@ -36,10 +36,10 @@
     "static/media/roboto-greek-ext-700-normal.woff2": "/goal-buddy/static/media/roboto-greek-ext-700-normal.9674bc0ae12c2551d9d1.woff2",
     "index.html": "/goal-buddy/index.html",
     "main.91e68815.css.map": "/goal-buddy/static/css/main.91e68815.css.map",
-    "main.f7151590.js.map": "/goal-buddy/static/js/main.f7151590.js.map"
+    "main.adeeda91.js.map": "/goal-buddy/static/js/main.adeeda91.js.map"
   },
   "entrypoints": [
     "static/css/main.91e68815.css",
-    "static/js/main.f7151590.js"
+    "static/js/main.adeeda91.js"
   ]
 }
