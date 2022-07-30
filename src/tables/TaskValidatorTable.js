@@ -1,19 +1,11 @@
 import {
-    Table,
-    TableContainer,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    Paper,
-    Checkbox,
-    Box,
-    Typography
+    Checkbox
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getDoc, setDoc, doc, getFirestore } from "firebase/firestore/lite";
 import firebase from "../firebase";
 import { getDateStr } from "../dateUtils";
+import BaseTable from "./BaseTable";
 
 const todayStr = getDateStr();
 const tomorrow = new Date();
@@ -33,40 +25,33 @@ export default function TaskValidatorTable({ tomorrow, user, setLoading }) {
     }, [user]);
 
     return (
-        <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h5">Tasks{ tomorrow ? ' For Tomorrow' : ''}</Typography>
-            {tasks.length ? <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow >
-                            <TableCell sx={tomorrow ? {} : {width: "16em"}}>Task</TableCell>
-                            {!tomorrow && <TableCell>Description</TableCell>}
-                            {!tomorrow && <TableCell padding="checkbox" />}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {tasks.map((item, idx) => (
-                            <TableRow key={idx} >
-                                <TableCell>{item.task}</TableCell>
-                                {!tomorrow && <TableCell>{item.description}</TableCell>}
-                                {!tomorrow && <TableCell padding="checkbox">
-                                    <Checkbox
-                                        checked={item.validated ?? false}
-                                        color="primary"
-                                        onChange={() => {
-                                            const updatedTasks = tasks.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
-                                            setDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr), { tasks: updatedTasks });
-                                            setTasks(updatedTasks);
-                                        }}
-                                    />
-                                </TableCell>}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer> : <Box>
-                <Typography variant="h6">No tasks set for { tomorrow ? 'tomorrow' : 'today' }</Typography>
-            </Box>}
-        </Box>
+        <BaseTable
+            title={`Tasks${ tomorrow ? ' For Tomorrow' : ''}`}
+            headers={tomorrow ? [
+                { label: 'Task' }
+            ] : [
+                { label: 'Task' },
+                { label: 'Note' },
+                { attributes: { padding: "checkbox" }}
+            ]}
+            rows={ tasks.map(({ task, note, validated }, idx) => tomorrow ? [
+                { content: task }
+            ] : [
+                { content: task },
+                { content: note },
+                { content: (
+                    <Checkbox
+                        checked={validated ?? false}
+                        color="primary"
+                        onChange={() => {
+                            const updatedTasks = tasks.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
+                            setDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr), { tasks: updatedTasks });
+                            setTasks(updatedTasks);
+                        }}
+                    />
+                )}
+            ]) }
+            emptyPlaceholder={`No tasks set for ${ tomorrow ? 'tomorrow' : 'today' }`}
+        />
     )
 }

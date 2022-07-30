@@ -43,7 +43,7 @@ export default function Settings() {
                 }
                 label="Designate a Goal Keeper"
             />
-            <Typography>Once you make the connection on both ends, you'll be able to see each other's tasks (you designate somebody, and he designates you)</Typography>
+            <Typography>Once you make the connection on both ends, you'll be able to see each other's tasks (you designate somebody, and they designate you)</Typography>
             <TextField
                 name="goalKeeper"
                 value={settings.goalKeeper ?? ""}
