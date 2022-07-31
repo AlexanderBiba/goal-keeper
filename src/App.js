@@ -31,7 +31,8 @@ import {
     ListItemText,
     Toolbar,
     Typography,
-    Box
+    Box,
+    Avatar
 } from "@mui/material";
 import {
     Menu as MenuIcon,
@@ -108,6 +109,16 @@ export default function App() {
                 </AppBar>
                 <Toolbar />
                 <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        <Avatar
+                            sx={{ mt: "2em", mb: "1em", width: 96, height: 96 }}
+                            src={user.imageUrl}
+                        />
+                    </Box>
                     <List sx={{ width: 250 }}>
                         {[
                             ["Home", <HomeIcon />, "home"]
