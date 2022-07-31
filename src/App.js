@@ -127,7 +127,7 @@ export default function App() {
                     <Divider />
                     <List>
                         {[
-                            ["Set Tasks", <LibraryBooksIcon />, "task-editor"]
+                            ["Tasks", <LibraryBooksIcon />, "task-editor"]
                         ].concat(user?.settings?.goalKeeper ? [["Validate Tasks", <LibraryAddCheckIcon />, "task-validator"]] : []).concat([
                             ["History", <HistoryIcon />, "history"],
                         ]).map(generateDrawerItem)}
