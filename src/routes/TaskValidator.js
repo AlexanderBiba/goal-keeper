@@ -29,10 +29,15 @@ export default function TaskValidator() {
         })();
     }, [user]);
 
+    const addLoadingComponent = (remainingComponents => () => {
+        remainingComponents++;
+        return () => (!--remainingComponents) && setLoading(false);
+    })(0)
+
     return (
         <Box>
-            <TaskValidatorTable setLoading={setLoading} user={userViewed}/>
-            <TaskValidatorTable setLoading={setLoading} user={userViewed} tomorrow={true}/>
+            <TaskValidatorTable renderDone={addLoadingComponent()} user={userViewed}/>
+            <TaskValidatorTable renderDone={addLoadingComponent()} user={userViewed} tomorrow={true}/>
             <Backdrop open={loading}><CircularProgress/></Backdrop>
             <Typography variant="h6">Viewing Tasks For {userViewed}<Tooltip enterTouchDelay={0} title="You can only view your Goal Keeper's tasks if they specify you as their Goal Keeper as well"><IconButton><InfoIcon /></IconButton></Tooltip></Typography>
         </Box>

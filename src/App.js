@@ -4,11 +4,12 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { signIn, signOut} from "./redux/user";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from "firebase/auth";
 import firebase from "./firebase";
+import { getDoc, doc, getFirestore } from "firebase/firestore/lite";
 
 import DialogProvider from "./DialogProvider";
 import TaskEditor from "./routes/TaskEditor";
@@ -58,10 +59,19 @@ const theme = createTheme({
 
 export default function App() {
     const [openDrawer, setOpenDrawer] = useState(false);
+    const [goalKeeper, setGoalKeeper] = useState("");
     const user = useSelector(state => state.user.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const auth = getAuth(firebase);
+    const db = getFirestore(firebase);
+
+    useEffect(() => {
+        if (!user) return;
+        (async () => {
+            setGoalKeeper(((await getDoc(doc(db, "users", user.email))).data()?.settings ?? {}).goalKeeper);
+        })();
+    }, [user]);
 
     const generateDrawerItem = ([text, icon, route], index) => (
         <ListItem key={index} disablePadding>
@@ -88,6 +98,7 @@ export default function App() {
                                 user ?
                                     async () => {
                                         dispatch(signOut(await firebaseSignOut(auth)));
+                                        navigate("home");
                                     } :
                                     async () => {
                                         const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
@@ -112,10 +123,10 @@ export default function App() {
                     <Divider />
                     <List>
                         {[
-                            ["Set Tasks", <LibraryBooksIcon />, "task-editor"],
-                            ["Validate Tasks", <LibraryAddCheckIcon />, "task-validator"],
+                            ["Set Tasks", <LibraryBooksIcon />, "task-editor"]
+                        ].concat(goalKeeper ? [["Validate Tasks", <LibraryAddCheckIcon />, "task-validator"]] : []).concat([
                             ["History", <HistoryIcon />, "history"],
-                        ].map(generateDrawerItem)}
+                        ]).map(generateDrawerItem)}
                     </List>
                     <Divider />
                     <List>
@@ -134,7 +145,7 @@ export default function App() {
                         />
                         <Route path="home" element={<Home />} />
                         <Route path="task-editor" element={<TaskEditor/>} />
-                        <Route path="task-validator" element={<TaskValidator/>} />
+                        {goalKeeper && <Route path="task-validator" element={<TaskValidator/>} />}
                         <Route path="history" element={<History/>} />
                         <Route path="settings" element={<Settings/>} />
                     </Routes>

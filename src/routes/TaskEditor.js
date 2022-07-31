@@ -10,10 +10,15 @@ import { useState } from "react";
 export default function TaskEditor() {
     const [loading, setLoading] = useState(true);
 
+    const addLoadingComponent = (remainingComponents => () => {
+        remainingComponents++;
+        return () => (!--remainingComponents) && setLoading(false);
+    })(0)
+
     return (
         <Box>
-            <TaskAgendaTable setLoading={setLoading}/>
-            <TaskEditorTable setLoading={setLoading}/>
+            <TaskAgendaTable renderDone={addLoadingComponent()}/>
+            <TaskEditorTable renderDone={addLoadingComponent()}/>
             <Backdrop open={loading}><CircularProgress/></Backdrop>
         </Box>
     )

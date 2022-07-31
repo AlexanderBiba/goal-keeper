@@ -46,15 +46,15 @@ export default function History() {
                             <TableHead>
                                 <TableRow >
                                     <TableCell sx={{width: "12em"}}>Task</TableCell>
-                                    <TableCell>Description</TableCell>
+                                    <TableCell>Note</TableCell>
                                     <TableCell padding="checkbox" />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {tasks.map(({ task, description, validated }, j) => (
+                                {tasks.map(({ task, note, validated }, j) => (
                                     <TableRow key={j} >
                                         <TableCell>{task}</TableCell>
-                                        <TableCell>{description}</TableCell>
+                                        <TableCell>{note}</TableCell>
                                         <TableCell padding="checkbox">
                                             <Checkbox
                                                 checked={validated ?? false}

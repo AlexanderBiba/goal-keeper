@@ -12,7 +12,7 @@ const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const tomorrowStr = getDateStr(tomorrow);
 
-export default function TaskValidatorTable({ tomorrow, user, setLoading }) {
+export default function TaskValidatorTable({ tomorrow, user, renderDone }) {
     const [tasks, setTasks] = useState([]);
 
     const db = getFirestore(firebase);
@@ -20,7 +20,7 @@ export default function TaskValidatorTable({ tomorrow, user, setLoading }) {
         if (!user) return;
         (async () => {
             setTasks((await getDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
-            setLoading(false);
+            renderDone();
         })();
     }, [user]);
 
@@ -45,7 +45,7 @@ export default function TaskValidatorTable({ tomorrow, user, setLoading }) {
                         color="primary"
                         onChange={() => {
                             const updatedTasks = tasks.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
-                            setDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr), { tasks: updatedTasks });
+                            setDoc(doc(db, "users", user, "tasks", todayStr), { tasks: updatedTasks });
                             setTasks(updatedTasks);
                         }}
                     />

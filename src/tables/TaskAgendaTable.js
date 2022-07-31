@@ -1,11 +1,4 @@
 import {
-    Table,
-    TableContainer,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    Paper,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -13,10 +6,9 @@ import {
     TextField,
     DialogActions,
     Button,
-    Box,
-    Typography,
     Tooltip,
-    IconButton
+    IconButton,
+    Checkbox
 } from "@mui/material";
 import { useState, useContext, useEffect } from "react";
 import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
@@ -27,79 +19,88 @@ import { getDateStr } from "../dateUtils";
 import {
     Info as InfoIcon
 } from "@mui/icons-material";
+import BaseTable from "./BaseTable";
 
 const todayStr = getDateStr();
 
-export default function TaskAgendaTable({ setLoading }) {
+export default function TaskAgendaTable({ renderDone }) {
     const [tasks, setTasks] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
-    const user = useSelector(state => state.user.user);
+    const user = (useSelector(state => state.user.user) ?? {}).email;
 
     const db = getFirestore(firebase);
     useEffect(() => {
         if (!user) return;
         (async () => {
-            setTasks((await getDoc(doc(db, "users", user.email, "tasks", todayStr))).data()?.tasks ?? []);
-            setLoading(false);
+            setTasks((await getDoc(doc(db, "users", user, "tasks", todayStr))).data()?.tasks ?? []);
+            renderDone();
         })();
     }, [user]);
 
     return (
-        <Box component={Paper} sx={{m: "1em", p: "1em"}}>
-            <Typography variant="h5">
+        <BaseTable
+            title={<>
                 Today's Tasks
                 <Tooltip enterTouchDelay={0} title="You can only set tasks for tomorrow"><IconButton><InfoIcon /></IconButton></Tooltip>
-            </Typography>
-            {tasks.length ? <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow >
-                            <TableCell sx={{width: "16em"}}>Tasks</TableCell>
-                            <TableCell>Description</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {tasks.map((item, idx) => (
-                            <TableRow key={idx} >
-                                <TableCell>{item.task}</TableCell>
-                                <TableCell
-                                    sx={{ cursor: "pointer" }}
-                                    onClick={() => openDialog((
-                                        <Dialog open={true} onClose={closeDialog} fullWidth >
-                                            <form onSubmit={e => {
-                                                e.preventDefault();
-                                                const description = e.target.description.value;
-                                                if (!description) return;
-                                                const updatedTasks = tasks.map((g, i) => (i !== idx) ? g : { ...g, description });
-                                                setDoc(doc(db, "users", user.email, "tasks", todayStr), { tasks: updatedTasks });
-                                                setTasks(updatedTasks);
-                                                closeDialog();
-                                            }}>
-                                                <DialogTitle>Modify Task Details</DialogTitle>
-                                                <DialogContent>
-                                                    <DialogContentText>Describe how the task was completed</DialogContentText>
-                                                    <TextField
-                                                        name="description"
-                                                        autoFocus
-                                                        margin="dense"
-                                                        label="Actions Taken"
-                                                        fullWidth
-                                                        defaultValue={item.description}
-                                                    />
-                                                </DialogContent>
-                                                <DialogActions>
-                                                    <Button onClick={closeDialog}>Cancel</Button>
-                                                    <Button variant="contained" type="submit">Save</Button>
-                                                </DialogActions>
-                                            </form>
-                                        </Dialog>
-                                    ))}
-                                >{item.description}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer> : <Typography variant="h6">You didn't set any tasks for today, set some for tomorrow</Typography>}
-        </Box>
+            </>}
+            headers={[
+                { label: "Tasks", attributes: { sx: { width: "16em" }}},
+                { label: "Note" },
+                { attributes: { padding: "checkbox" }}
+            ]}
+            rows={tasks.map(({ task, note, validated }, idx) => [
+                { content: task },
+                {
+                    content: note,
+                    attributes: {
+                        sx: { cursor: "pointer" },
+                        onClick: () => openDialog((
+                            <Dialog open={true} onClose={closeDialog} fullWidth >
+                                <form onSubmit={e => {
+                                    e.preventDefault();
+                                    const note = e.target.note.value;
+                                    if (!note) return;
+                                    const updatedTasks = tasks.map((g, i) => (i !== idx) ? g : { ...g, note });
+                                    setDoc(doc(db, "users", user, "tasks", todayStr), { tasks: updatedTasks });
+                                    setTasks(updatedTasks);
+                                    closeDialog();
+                                }}>
+                                    <DialogTitle>Modify Task Details</DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText>Describe how the task was completed</DialogContentText>
+                                        <TextField
+                                            name="note"
+                                            autoFocus
+                                            margin="dense"
+                                            label="Actions Taken"
+                                            fullWidth
+                                            defaultValue={note}
+                                        />
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={closeDialog}>Cancel</Button>
+                                        <Button variant="contained" type="submit">Save</Button>
+                                    </DialogActions>
+                                </form>
+                            </Dialog>
+                        ))
+                    }
+                },
+                {
+                    content: (
+                        <Checkbox
+                            checked={validated ?? false}
+                            color="primary"
+                            onChange={() => {
+                                const updatedTasks = tasks.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
+                                setDoc(doc(db, "users", user, "tasks", todayStr), { tasks: updatedTasks });
+                                setTasks(updatedTasks);
+                            }}
+                        />
+                    )
+                }
+            ])}
+            emptyPlaceholder="You didn't set any tasks for today, set some for tomorrow"
+        />
     )
 }
