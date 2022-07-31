@@ -116,7 +116,7 @@ export default function App() {
                     >
                         <Avatar
                             sx={{ mt: "2em", mb: "1em", width: 96, height: 96 }}
-                            src={user.imageUrl}
+                            src={user?.imageUrl}
                         />
                     </Box>
                     <List sx={{ width: 250 }}>
