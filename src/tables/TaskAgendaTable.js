@@ -26,13 +26,13 @@ const todayStr = getDateStr();
 export default function TaskAgendaTable({ renderDone }) {
     const [tasks, setTasks] = useState([]);
     const { openDialog, closeDialog } = useContext(DialogContext);
-    const user = (useSelector(state => state.user.user) ?? {}).email;
+    const user = (useSelector(state => state.user.user) ?? {});
 
     const db = getFirestore(firebase);
     useEffect(() => {
         if (!user) return;
         (async () => {
-            setTasks((await getDoc(doc(db, "users", user, "tasks", todayStr))).data()?.tasks ?? []);
+            setTasks((await getDoc(doc(db, "users", user.email, "tasks", todayStr))).data()?.tasks ?? []);
             renderDone();
         })();
     }, [user]);
@@ -61,7 +61,7 @@ export default function TaskAgendaTable({ renderDone }) {
                                     const note = e.target.note.value;
                                     if (!note) return;
                                     const updatedTasks = tasks.map((g, i) => (i !== idx) ? g : { ...g, note });
-                                    setDoc(doc(db, "users", user, "tasks", todayStr), { tasks: updatedTasks });
+                                    setDoc(doc(db, "users", user.email, "tasks", todayStr), { tasks: updatedTasks });
                                     setTasks(updatedTasks);
                                     closeDialog();
                                 }}>
@@ -90,10 +90,11 @@ export default function TaskAgendaTable({ renderDone }) {
                     content: (
                         <Checkbox
                             checked={validated ?? false}
+                            disabled={Boolean(user?.settings?.goalKeeper)}
                             color="primary"
                             onChange={() => {
                                 const updatedTasks = tasks.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
-                                setDoc(doc(db, "users", user, "tasks", todayStr), { tasks: updatedTasks });
+                                setDoc(doc(db, "users", user.email, "tasks", todayStr), { tasks: updatedTasks });
                                 setTasks(updatedTasks);
                             }}
                         />

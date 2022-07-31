@@ -11,10 +11,13 @@ export const userSlice = createSlice({
         },
         signOut(state) {
             state.user = null;
+        },
+        setUserSettings(state, action) {
+            state.user.settings = action.payload;
         }
     }
 });
 
-export const { signIn, signOut } = userSlice.actions;
+export const { signIn, signOut, setUserSettings } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -12,17 +12,17 @@ const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const tomorrowStr = getDateStr(tomorrow);
 
-export default function TaskValidatorTable({ tomorrow, user, renderDone }) {
+export default function TaskValidatorTable({ tomorrow, userEmail, renderDone }) {
     const [tasks, setTasks] = useState([]);
 
     const db = getFirestore(firebase);
     useEffect(() => {
-        if (!user) return;
+        if (!userEmail) return;
         (async () => {
-            setTasks((await getDoc(doc(db, "users", user, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
+            setTasks((await getDoc(doc(db, "users", userEmail, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
             renderDone();
         })();
-    }, [user]);
+    }, [userEmail]);
 
     return (
         <BaseTable
@@ -45,7 +45,7 @@ export default function TaskValidatorTable({ tomorrow, user, renderDone }) {
                         color="primary"
                         onChange={() => {
                             const updatedTasks = tasks.map((item, i) => (i !== idx) ? item : { ...item, validated: !item.validated });
-                            setDoc(doc(db, "users", user, "tasks", todayStr), { tasks: updatedTasks });
+                            setDoc(doc(db, "users", userEmail, "tasks", todayStr), { tasks: updatedTasks });
                             setTasks(updatedTasks);
                         }}
                     />

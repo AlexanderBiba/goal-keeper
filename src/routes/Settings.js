@@ -14,13 +14,15 @@ import {
 import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
 import { useState, useEffect } from "react";
 import firebase from "../firebase"
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserSettings } from "../redux/user";
 
 export default function Settings() {
     const [settings, setSettings] = useState({ goalKeeper: '', goalKeeperEnabled: false });
     const [successAlert, setSuccessAlert] = useState();
     const [loading, setLoading] = useState(true);
     const user = useSelector(state => state.user.user);
+    const dispatch = useDispatch();
 
     const db = getFirestore(firebase);
     useEffect(() => {
@@ -59,7 +61,9 @@ export default function Settings() {
                     variant="contained"
                     onClick={async e => {
                         e.preventDefault();
-                        await setDoc(doc(db, "users", user.email), { settings: { goalKeeper: settings.goalKeeperEnabled ? settings.goalKeeper : null } });
+                        const userSettigs = { goalKeeper: settings.goalKeeperEnabled ? settings.goalKeeper : null };
+                        await setDoc(doc(db, "users", user.email), { settings: userSettigs });
+                        dispatch(setUserSettings(userSettigs));
                         setSuccessAlert(true);
                     }}
                 >Save</Button>

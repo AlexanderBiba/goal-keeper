@@ -16,7 +16,7 @@ import {
 } from "@mui/icons-material";
 
 export default function TaskValidator() {
-    const [userViewed, setUserViewed] = useState("");
+    const [goalKeeper, setGoalKeeper] = useState("");
     const [loading, setLoading] = useState(true);
     const user = useSelector(state => state.user.user);
 
@@ -25,7 +25,7 @@ export default function TaskValidator() {
         if (!user) return;
         (async () => {
             const { goalKeeper } = (await getDoc(doc(db, "users", user.email))).data()?.settings ?? {};
-            setUserViewed(goalKeeper || user.email);
+            setGoalKeeper(goalKeeper);
         })();
     }, [user]);
 
@@ -36,10 +36,10 @@ export default function TaskValidator() {
 
     return (
         <Box>
-            <TaskValidatorTable renderDone={addLoadingComponent()} user={userViewed}/>
-            <TaskValidatorTable renderDone={addLoadingComponent()} user={userViewed} tomorrow={true}/>
+            <TaskValidatorTable renderDone={addLoadingComponent()} userEmail={goalKeeper}/>
+            <TaskValidatorTable renderDone={addLoadingComponent()} userEmail={goalKeeper} tomorrow={true}/>
             <Backdrop open={loading}><CircularProgress/></Backdrop>
-            <Typography variant="h6">Viewing Tasks For {userViewed}<Tooltip enterTouchDelay={0} title="You can only view your Goal Keeper's tasks if they specify you as their Goal Keeper as well"><IconButton><InfoIcon /></IconButton></Tooltip></Typography>
+            <Typography variant="h6">Viewing Tasks For {goalKeeper}<Tooltip enterTouchDelay={0} title="You can only view your Goal Keeper's tasks if they specify you as their Goal Keeper as well"><IconButton><InfoIcon /></IconButton></Tooltip></Typography>
         </Box>
     )
 }

@@ -4,7 +4,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { signIn, signOut} from "./redux/user";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from "firebase/auth";
@@ -59,19 +59,11 @@ const theme = createTheme({
 
 export default function App() {
     const [openDrawer, setOpenDrawer] = useState(false);
-    const [goalKeeper, setGoalKeeper] = useState("");
     const user = useSelector(state => state.user.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const auth = getAuth(firebase);
     const db = getFirestore(firebase);
-
-    useEffect(() => {
-        if (!user) return;
-        (async () => {
-            setGoalKeeper(((await getDoc(doc(db, "users", user.email))).data()?.settings ?? {}).goalKeeper);
-        })();
-    }, [user]);
 
     const generateDrawerItem = ([text, icon, route], index) => (
         <ListItem key={index} disablePadding>
@@ -97,8 +89,8 @@ export default function App() {
                             onClick={() => dispatch(
                                 user ?
                                     async () => {
-                                        dispatch(signOut(await firebaseSignOut(auth)));
                                         navigate("home");
+                                        dispatch(signOut(await firebaseSignOut(auth)));
                                     } :
                                     async () => {
                                         const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
@@ -106,7 +98,8 @@ export default function App() {
                                             email: user.email,
                                             uid: user.uid,
                                             imageUrl: user.photoURL,
-                                            displayName: user.displayName
+                                            displayName: user.displayName,
+                                            settings: (await getDoc(doc(db, "users", user.email))).data()?.settings ?? {}
                                         }))
                                     }
                             )}
@@ -124,7 +117,7 @@ export default function App() {
                     <List>
                         {[
                             ["Set Tasks", <LibraryBooksIcon />, "task-editor"]
-                        ].concat(goalKeeper ? [["Validate Tasks", <LibraryAddCheckIcon />, "task-validator"]] : []).concat([
+                        ].concat(user?.settings?.goalKeeper ? [["Validate Tasks", <LibraryAddCheckIcon />, "task-validator"]] : []).concat([
                             ["History", <HistoryIcon />, "history"],
                         ]).map(generateDrawerItem)}
                     </List>
@@ -144,10 +137,10 @@ export default function App() {
                             )}
                         />
                         <Route path="home" element={<Home />} />
-                        <Route path="task-editor" element={<TaskEditor/>} />
-                        {goalKeeper && <Route path="task-validator" element={<TaskValidator/>} />}
-                        <Route path="history" element={<History/>} />
-                        <Route path="settings" element={<Settings/>} />
+                        {user && <Route path="task-editor" element={<TaskEditor/>} />}
+                        {user?.settings?.goalKeeper && <Route path="task-validator" element={<TaskValidator/>} />}
+                        {user && <Route path="history" element={<History/>} />}
+                        {user && <Route path="settings" element={<Settings/>} />}
                     </Routes>
                 </Box>
             </DialogProvider>
