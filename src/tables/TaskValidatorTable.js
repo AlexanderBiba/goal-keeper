@@ -14,12 +14,19 @@ const tomorrowStr = getDateStr(tomorrow);
 
 export default function TaskValidatorTable({ tomorrow, userEmail, renderDone }) {
     const [tasks, setTasks] = useState([]);
+    const [emptyPlaceholder, setEmptyPlaceholder] = useState(`No tasks set for ${ tomorrow ? 'tomorrow' : 'today' }`)
 
     const db = getFirestore(firebase);
     useEffect(() => {
         if (!userEmail) return;
         (async () => {
-            setTasks((await getDoc(doc(db, "users", userEmail, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
+            try {
+                setTasks((await getDoc(doc(db, "users", userEmail, "tasks", tomorrow ? tomorrowStr : todayStr))).data()?.tasks ?? []);
+            } catch (e) {
+                console.error(e);
+                setTasks([]);
+                setEmptyPlaceholder("Permission denied: your Goal Keeper did not designate you as their Goal Keeper");
+            }
             renderDone();
         })();
     }, [userEmail]);
@@ -51,7 +58,7 @@ export default function TaskValidatorTable({ tomorrow, userEmail, renderDone }) 
                     />
                 )}
             ]) }
-            emptyPlaceholder={`No tasks set for ${ tomorrow ? 'tomorrow' : 'today' }`}
+            emptyPlaceholder={emptyPlaceholder}
         />
     )
 }
