@@ -12,7 +12,7 @@ These tasks ranged from trivial generic tasks such as "Daily Exercise", to more 
 
 We came up with the following method:
 - We each prepared a table in Google Sheets with the following columns: Task | Note | Reviewed
-- Every day, each of us would come up with a list of tasks for tomorrow, that list had to be locked in until 11:59pm
+- Every day, each of us would come up with a list of *Task*s for tomorrow, that list had to be locked in until 11:59pm
 - Come tomorrow, we would fill out a *Note* for each task, describing how we actually completed that task
 - End of day, each of us would go over the other's table, make sure that the note makes sense for the given task, and add a checkmark in the *Reviewed* field for that row
     - If there was no note, or if the note did not make sense, we would leave that field blank, or sometimes, paint it red to shame the other person for not completing a task
