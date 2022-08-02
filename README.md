@@ -19,7 +19,7 @@ We came up with the following method:
 - After we've reviewed each other's tasks, we would come up with new tasks for tomorrow, and repeat
 
 We would compete with each other in a 30 days period of time, who can get the most check marks.
-This gave us motivation to act on our daily personal goals, which helped us get more things done every day, and subsequently, create better habits.
+This gave us motivation to act on our personal daily goals, which helped us get more things done every day, and subsequently, create better habits.
 
 After a few days of doing this with Google Sheets, I suggested turning it into a web-app since there were a few features that we were lacking, primarily, locking in the daily tasks was impossible with Google Sheets.
 
