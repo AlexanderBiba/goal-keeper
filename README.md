@@ -1,6 +1,6 @@
 # Goal Keeper
 
-On github pages: https://alex152.github.io/goal-keeper
+On github pages: https://alexanderbiba.github.io/goal-keeper
 
 ## The Story
 
