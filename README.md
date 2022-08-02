@@ -25,4 +25,4 @@ After a few days of doing this with Google Sheets, I suggested turning it into a
 
 Goal Keeper is an implementation of this method.
 
-Goal Keeper allows you to designate a "Goal Keeper", lock in tasks for tomorrow, add a note describing how you completed that task, and have your Goal Keeper review, and give you a checkmark if you done right.
+Goal Keeper allows you to designate a "Goal Keeper", lock in tasks for tomorrow, add a note describing how you completed that task, have your Goal Keeper review them, and give you a checkmark if you've done right.
