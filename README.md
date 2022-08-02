@@ -8,7 +8,7 @@ My brother and I were looking for a way to motivate ourselves to achieve our dai
 
 We both had a mental list of tasks we wanted to do on a given day, but very often, lacked the motivation to actually get up and do them, or in many cases forgot about them entirely.
 
-These tasks ranged from trivial generic tasks such as "Daily Exercise", to more specific such as "Go to the store and buy an HDMI cable" or "Get up at 7am".
+These tasks ranged from trivial generic tasks such as "Daily Exercise", to more specific ones such as "Go to the store and buy an HDMI cable" or "Get up at 7am".
 
 We came up with the following method:
 - We each prepared a table in Google Sheets with the following columns: Task | Note | Reviewed
