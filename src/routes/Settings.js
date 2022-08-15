@@ -11,7 +11,7 @@ import {
     Backdrop,
     CircularProgress
 } from "@mui/material";
-import { setDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
+import { updateDoc, getDoc, doc, getFirestore } from "firebase/firestore/lite";
 import { useState, useEffect } from "react";
 import firebase from "../firebase"
 import { useSelector, useDispatch } from "react-redux";
@@ -62,7 +62,9 @@ export default function Settings() {
                     onClick={async e => {
                         e.preventDefault();
                         const userSettigs = { goalKeeper: settings.goalKeeperEnabled ? settings.goalKeeper : null };
-                        await setDoc(doc(db, "users", user.email), { settings: userSettigs });
+                        await updateDoc(doc(db, "users", user.email), { settings: userSettigs });
+                        if (settings.goalKeeperEnabled && settings.goalKeeper !== user.settings.goalKeeper)
+                            await updateDoc(doc(db, "users", settings.goalKeeper), { pendingGoalKeeper: user.email });
                         dispatch(setUserSettings(userSettigs));
                         setSuccessAlert(true);
                     }}
