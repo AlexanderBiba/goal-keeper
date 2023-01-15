@@ -2,7 +2,7 @@
 
 On github pages: https://alexanderbiba.github.io/goal-keeper
 
-## The Story
+## Background
 
 My brother and I were looking for a way to motivate ourselves to achieve our daily goals.
 
